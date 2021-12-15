@@ -6,7 +6,7 @@ library(sf)
 
 # Create queries for FFIEC API pull.
 hmda_queries <- list(states = "WA",
-                      years = "2019")
+                      years = "2020")
 
 # Set base URL for FFIEC API pull.
 hmda_base_url <- c("https://ffiec.cfpb.gov/v2/data-browser-api/view/csv")
@@ -183,12 +183,6 @@ hmda <- map(names(hmda2), function(hmda2_name) {
   bind_cols() %>% 
   bind_cols(hmda3)
 
-# Prepare hmda for merge.
-hmda <- hmda %>% 
-  mutate(census_tract = as.character(census_tract - (county_code * 1000000))) %>% 
-  mutate(census_tract = map_chr(census_tract, function(x) {
-    if_else(nchar(x) < 6, sprintf("0%s", x), x)}))
-
 # Method from .csv file, and then filter by US and only keep LEI and name.
 lei <- read_csv("data/gleif.csv",
                                col_select = c("LEI",
@@ -204,8 +198,10 @@ colnames(lei) <- c("LEI", "Entity Name")
 # Pull in API key and set census base URL.
 api_key <- read_json("data/census.json")
 census_base_url <- c("https://api.census.gov/data/2019/acs/acs5/subject")
+census2_base_url <- c("https://api.census.gov/data/2019/acs/acs5")
 
-# Various census variables for collection.
+# Various census variables for collection. Separate census tibbles based on
+# variables.
 census_stats <- c("NAME",
                   # Total Population
                   "S0101_C01_001E",
@@ -254,24 +250,45 @@ census_stats <- c("NAME",
                   # Females
                   "S0101_C05_001E")
 
+
+census2_stats <- c("NAME",
+                   # White
+                   "B02001_002E",
+                   # African-American
+                   "B02001_003E",
+                   # Native American
+                   "B02001_004E",
+                   # Asian
+                   "B02001_005E",
+                   # Multi-Racial
+                   "B02001_008E",
+                   # Latino
+                   "B03001_003E")
+
 # Put together all variables needed for query.
 census_params <- reduce(census_stats, ~paste(.x, .y, sep = ","))
+census2_params <- reduce(census2_stats, ~paste(.x, .y, sep = ","))
 
 # Query list for census API pull.
 census_queries <- list('get' = census_params,
-                       'for'= 'tract:*',
+                       'for'= 'county:*',
                        'in' = 'state:53',
-                       'in' = 'county:*',
+                       'key' = api_key)
+
+census2_queries <- list('get' = census2_params,
+                       'for' = 'county:*',
+                       'in' = 'state:53',
                        'key' = api_key)
 
 # Request API data.
 census_request <- GET(census_base_url, query = census_queries)
+census2_request <- GET(census2_base_url, query = census2_queries)
 
 # Pull API data into tibble.
 census <- fromJSON(content(census_request, as = "text")) %>% 
   as_tibble()
-
-census
+census2 <- fromJSON(content(census2_request, as = "text")) %>% 
+  as_tibble()
 
 # Create census column names and rename census tibble accordingly.
 census_names <- c("Name",
@@ -299,33 +316,57 @@ census_names <- c("Name",
                   "Males",
                   "Females",
                   "State",
-                  "County",
-                  "Tract")
+                  "County")
+
+census2_names <- c("Name",
+                  "White",
+                  "African-American",
+                  "Native American",
+                  "Asian",
+                  "Multi-Racial",
+                  "Latino",
+                  "State",
+                  "County")
 
 colnames(census) <- census_names
+colnames(census2) <- census2_names
 
 # Remove first row.
 census <- census %>% 
   slice(-1)
+census2 <- census2 %>% 
+  slice(-1)
 
 # Change all numeric values to numeric type.
 census[,2:24] <- lapply(2:24, function(x) as.numeric(census[[x]]))
+census2[,2:7] <- lapply(2:7, function(x) as.numeric(census2[[x]]))
+
+# Merge two census tables.
+census <- census %>% 
+  full_join(census2, by = "Name") %>% 
+  select(-State.y, -County.y) %>% 
+  rename(State = State.x, County = County.x)
 
 # Replace bad values with NAs.
 census <- census %>% 
-  mutate_all(function(x) replace(x, which(x < 0), NA))
+  mutate_all(function(x) replace(x, which(x < 0), NA)) %>% 
+  mutate(GEOID = as.numeric(paste(as.character(State),
+                       as.character(County),sep=""))) %>% 
+  select(-State,-County)
 
-# Read in shapefile of census tracts in WA.
-wash <- read_sf("data/tl_2021_53_tract.shp")
+# # Read in shapefile of census tracts in WA.
+# # Use later. 
+# wash <- read_sf("data/tl_2019_us_county.shp") %>%
+#   filter(STATEFP == "53") %>%
+#   mutate(GEOID = as.numeric(GEOID)) %>%
+#   select(NAME, GEOID, INTPTLAT, INTPTLON, geometry)
 
 # Join all dataframes.
 # Consider dropping duplicative county/state columns and designating columns as
 # belonging to particular dataframes.
-# Inspect joins on census tracts to make sure appropriate data is captured.
-hmda_lei_census <- hmda %>% 
-  left_join(lei, by = c("lei" = "LEI")) %>% 
-  left_join(census, by = c("census_tract" = "Tract")) %>% 
-  left_join(wash, by = c("census_tract" = "TRACTCE"))
+hmda_lei_census <- hmda %>%
+  left_join(lei, by = c("lei" = "LEI")) %>%
+  left_join(census, by = c("county_code" = "GEOID"))
 
 # Write to .csv file.
 write_csv(hmda_lei_census, file = "data/hmda_lei_census.csv")
