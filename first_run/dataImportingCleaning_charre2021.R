@@ -67,31 +67,23 @@ for(i in (1:length(lar$Descriptions))) {
 }
 
 # Conduct a string replace to better match lar values to hmda columns.
-patterns <- c("applicant or borrower - name and version 
-              of credit scoring model",
-              "co-applicant or co-borrower - name and version 
-              of credit scoring model",
+patterns <- c("applicant or borrower - name and version of credit scoring model",
+              "co-applicant or co-borrower - name and version of credit scoring model",
               "automated underwriting system",
               "reason for denial",
               "initially payable to your institution",
               "other non-amortizing features",
               "type of purchaser",
-              "sex of co-applicant or co-borrower collected 
-              on the basis of visual observation or surname",
-              "sex of applicant or borrower collected 
-              on the basis of visual observation or surname",
+              "sex of co-applicant or co-borrower collected on the basis of visual observation or surname",
+              "sex of applicant or borrower collected on the basis of visual observation or surname",
+              "race of co-applicant or co-borrower collected on the basis of visual observation or surname",
+              "race of applicant or borrower collected on the basis of visual observation or surname",
+              "ethnicity of co-applicant or co-borrower collected on the basis of visual observation or surname",
+              "ethnicity of applicant or borrower collected on the basis of visual observation or surname",
               "sex of co-applicant or co-borrower",
               "sex of applicant or borrower",
-              "race of co-applicant or co-borrower collected on the basis 
-              of visual observation or surname",
-              "race of applicant or borrower collected on the basis 
-              of visual observation or surname",
               "race of co-applicant or co-borrower",
               "race of applicant or borrower",
-              "ethnicity of co-applicant or co-borrower 
-              collected on the basis of visual observation or surname",
-              "ethnicity of applicant or borrower
-              collected on the basis of visual observation or surname",
               "ethnicity of co-applicant or co-borrower",
               "ethnicity of applicant or borrower",
               ": ",
@@ -106,14 +98,14 @@ replacements <- c("applicant_credit_score_type",
                   "purchaser type",
                   "co-applicant sex observed",
                   "applicant sex observed",
-                  "co-applicant sex",
-                  "applicant sex",
                   "co-applicant race observed",
                   "applicant race observed",
-                  "co-applicant race",
-                  "applicant race",
                   "co-applicant ethnicity observed",
                   "applicant ethnicity observed",
+                  "co-applicant sex",
+                  "applicant sex",
+                  "co-applicant race",
+                  "applicant race",
                   "co-applicant ethnicity",
                   "applicant ethnicity",
                   "-",
@@ -123,7 +115,7 @@ replacements <- c("applicant_credit_score_type",
 lc_replace_and_underscore <- function(given_string) {
   given_string <- tolower(given_string)
   for(i in (1:length(patterns))) {
-    if(str_detect(given_string, substring(patterns[i], 1, 6))) {
+    if(str_detect(given_string, patterns[i])) {
       given_string <- str_replace_all(given_string, 
                                       patterns[i], 
                                       replacements[i])
@@ -194,6 +186,8 @@ filter(Entity.LegalAddress.Country == "US") %>%
 
 # Adjust LEI tibble column names.
 colnames(lei) <- c("LEI", "Entity Name")
+
+lei["Entity Name"] <- map(lei["Entity Name"], toupper)
 
 # Pull in API key and set census base URL.
 api_key <- read_json("data/census.json")
