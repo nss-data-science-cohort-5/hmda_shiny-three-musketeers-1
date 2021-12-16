@@ -90,7 +90,7 @@ patterns <- c("applicant or borrower - name and version of credit scoring model"
               " ")
 
 replacements <- c("applicant_credit_score_type",
-                  "co_applicant_credit_score_type",
+                  "co-applicant_credit_score_type",
                   "aus",
                   "denial reason",
                   "initially_payable_to_institution",
@@ -173,7 +173,14 @@ hmda <- map(names(hmda2), function(hmda2_name) {
   
 }) %>% 
   bind_cols() %>% 
-  bind_cols(hmda3)
+  bind_cols(hmda3) %>% 
+  select(-ends_with("above_62")) # Remove above_62 columns, not needed.
+
+# Replace NA values under lar key with actual NA values.
+hmda[, c("applicant_age", "co-applicant_age")] <- hmda %>% 
+  select("applicant_age", "co-applicant_age") %>% 
+  na_if(., ("8888")) %>% 
+  na_if(., ("9999")) 
 
 # Method from .csv file, and then filter by US and only keep LEI and name.
 lei <- read_csv("data/gleif.csv",
@@ -348,12 +355,30 @@ census <- census %>%
                        as.character(County),sep=""))) %>% 
   select(-State,-County)
 
-# # Read in shapefile of census tracts in WA.
-# # Use later. 
-# wash <- read_sf("data/tl_2019_us_county.shp") %>%
-#   filter(STATEFP == "53") %>%
-#   mutate(GEOID = as.numeric(GEOID)) %>%
-#   select(NAME, GEOID, INTPTLAT, INTPTLON, geometry)
+# Clean-up census for ages to match hmda values.
+census <- census %>%
+  select(starts_with("Age")) %>% 
+  mutate_all(as.numeric) %>% 
+  rowwise() %>% 
+  mutate("Area <25" = sum(.[,1:5], na.rm = TRUE),
+         "Area 25-34" = sum(.[,6:7], na.rm = TRUE),
+         "Area 35-44" = sum(.[,8:9], na.rm = TRUE),
+         "Area 45-54" = sum(.[,10:11], na.rm = TRUE),
+         "Area 55-64" = sum(.[,12:13], na.rm = TRUE),
+         "Area 65-74" = sum(.[,14:15], na.rm = TRUE),
+         "Area >75" = sum(.[,16:18], na.rm = TRUE)) %>% 
+  select(-(1:18)) %>% 
+  bind_cols(census) %>% 
+  select(-(10:27))
+
+# Read in shapefile of census tracts in WA and write shapefile
+# In shortened version.
+wash <- read_sf("data/tl_2019_us_county.shp") %>%
+  filter(STATEFP == "53") %>%
+  mutate(GEOID = as.numeric(GEOID)) %>%
+  select(NAME, GEOID, INTPTLAT, INTPTLON, geometry)
+
+write_sf(wash, "data/wash.shp")
 
 # Join all dataframes.
 # Consider dropping duplicative county/state columns and designating columns as
