@@ -374,15 +374,6 @@ census <- census %>%
   bind_cols(census) %>%
   select(-(10:27))
 
-# Read in shapefile of census tracts in WA and write shapefile
-# In shortened version.
-wash <- read_sf("data/tl_2019_us_county.shp") %>%
-  filter(STATEFP == "53") %>%
-  mutate(GEOID = as.numeric(GEOID)) %>%
-  select(NAME, GEOID, INTPTLAT, INTPTLON, geometry)
-
-write_sf(wash, "data/wash.shp")
-
 # Join all dataframes.
 # Consider dropping duplicative county/state columns and designating columns as
 # belonging to particular dataframes.
@@ -392,3 +383,12 @@ hmda_lei_census <- hmda %>%
 
 # Write to .csv file.
 write_csv(hmda_lei_census, file = "data/hmda_lei_census.csv")
+
+# Read in shapefile of census tracts in WA and write shapefile
+# In shortened version.
+wash <- read_sf("data/tl_2019_us_county.shp") %>%
+  filter(STATEFP == "53") %>%
+  mutate(GEOID = as.numeric(GEOID)) %>%
+  select(NAME, GEOID, INTPTLAT, INTPTLON, geometry)
+
+write_sf(wash, "data/wash.shp")
