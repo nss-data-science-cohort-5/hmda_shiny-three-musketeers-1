@@ -1,6 +1,8 @@
+#1 Race and race census plots/tables
+
 #1 Plot of loans by race
 output$racePlot1 <- renderPlot({
-  data_filtered1() %>%
+  data_filtered1()%>%
     count(derived_race = factor(derived_race)) %>%
     mutate(pct = prop.table(n)) %>%
     ggplot(aes(x = reorder(derived_race, pct), y = pct, fill = derived_race, label = scales::percent(pct))) +

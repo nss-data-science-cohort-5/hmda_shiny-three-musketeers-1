@@ -4,7 +4,9 @@ library(DT)
 
 
 
-hmda_lei_census <- read_csv("data/hmda_lei_census.csv")
+hmda_lei_census <- read_csv("../data/hmda_lei_census.csv")
+
+
 
 # hmda_lei_census %>% 
 #   select(Name, White, `African-American`, `Native American`, Asian, `Multi-Racial`, Latino) %>% 
