@@ -1,5 +1,6 @@
 # Libraries and read in data to go into global.R.
 library(tidyverse)
+library(scales)
 
 hmda_lei_census <- read_csv("data/hmda_lei_census.csv")
 
@@ -58,12 +59,12 @@ age_vars %>%
   ggplot(aes(x = Group, 
              y = Value, 
              fill = Category, 
-             label = scales::percent(Value))) +
+             label = percent(Value))) +
   geom_col(position = position_dodge(width = 1)) +
   geom_text(position = position_dodge(width = 1),
             vjust = -0.5,
             size = 4) +
-  scale_y_continuous(labels = scales::percent,
+  scale_y_continuous(labels = percent,
                      limits = c(0,0.35)) +
   labs(x = "Applicant Age Group",
        y = "Percentage of Applicants",
@@ -76,7 +77,7 @@ age_vars %>%
              y = Value, 
              fill = Category)) +
   geom_col(position = position_dodge(width = 1)) +
-  scale_y_continuous(labels = scales::comma,
+  scale_y_continuous(labels = comma,
                      breaks = seq(0,3000000,by=250000),
                      limits = c(0,2500000)) +
   labs(x = "Applicant Age Group",
@@ -86,17 +87,13 @@ age_vars %>%
 # Table of percentages and counts
 # of applicant ages to be inputted into Server.R.
 # Use for both output 1 and output 2.
-
-round_times_100 <- function(num) {
-  num <- round(num * 100)
-  return(num)
-}
-
-# Add comma separators and percent signs.
 age_vars %>%
   pivot_wider(names_from = "Category", values_from = "Value") %>% 
   mutate("Applicant Percentage" = sapply(.[["Applicant Percentage"]],
-                                      round_times_100),
+                                         label_percent()),
          "Area Percentage" = sapply(.[["Area Percentage"]],
-                                    round_times_100)) %>%
-  rename("Applicant Age Group" = "Group")
+                                    label_percent())) %>%
+  rename("Applicant Age Group" = "Group", "Applicant Total" = "Total") %>% 
+  mutate("Area Total" = prettyNum(.[["Area Total"]], big.mark = ","),
+         "Applicant Total" = prettyNum(.[["Applicant Total"]], big.mark = ",")) %>% 
+  relocate("Applicant Total", .before = "Applicant Percentage")
