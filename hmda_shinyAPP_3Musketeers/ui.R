@@ -98,6 +98,17 @@ shinyUI(fluidPage(
                                      pull(derived_dwelling_category) %>% 
                                      unique() %>% 
                                      sort()))
+    ),
+    
+    column(3,
+           selectInput(inputId = "activity_year",
+                       label = "Year:",
+                       multiple = TRUE,
+                       selected = "All",
+                       choices = c("All", hmda_lei_census %>%
+                                     pull(activity_year) %>% 
+                                     unique() %>% 
+                                     sort()))
     )
   ),
   
@@ -172,29 +183,7 @@ shinyUI(fluidPage(
     )
   ),
   
-  #4 Disability and disability census plots/tables
-  h2("Loan Applications by Applicants' Disability and Disability Data in Census", align = "center"),
-  fluidRow(
-    column(6,
-           tabsetPanel(
-             tabPanel("Plot", plotOutput("disabilityPlot1")),
-             tabPanel("Table", dataTableOutput("disabilityTable1")),
-             tabPanel("Census Plot", plotOutput("disabilityCensusPlot1")),
-             tabPanel("Census Table", dataTableOutput("disabilityCensusTable1"))
-           )
-    ),
-    
-    column(6,
-           tabsetPanel(
-             tabPanel("Plot", plotOutput("disabilityPlot2")),
-             tabPanel("Table", dataTableOutput("disabilityTable2")),
-             tabPanel("Census Plot", plotOutput("disabilityCensusPlot2")),
-             tabPanel("Census Table", dataTableOutput("disabilityCensusTable2"))
-           )
-    )
-  ),
-  
-  #5 Distribution of Loan Amounts plots/tables
+  #4 Distribution of Loan Amounts plots/tables
   h2("Distribution of Loan Amounts", align = "center"),
   fluidRow(
     column(6,
@@ -212,7 +201,7 @@ shinyUI(fluidPage(
     )
   ),
   
-  #6 Applicants' Credit Scores plots/tables
+  #5 Applicants' Credit Scores plots/tables
   h2("Applicants' Credit Scores", align = "center"),
   fluidRow(
     column(6,
@@ -230,7 +219,7 @@ shinyUI(fluidPage(
     )
   ),
   
-  #7 Denial Reasons of Loan Applications plots/tables
+  #6 Denial Reasons of Loan Applications plots/tables
   h2("Denial Reasons of Loan Applications", align = "center"),
   fluidRow(
     column(6,
@@ -248,7 +237,7 @@ shinyUI(fluidPage(
     )
   ),
   
-  #8 Loan Applications by Action Taken plots/tables
+  #7 Loan Applications by Action Taken plots/tables
   h2("Loan Applications by Action Taken", align = "center"),
   fluidRow(
     column(6,
@@ -266,7 +255,7 @@ shinyUI(fluidPage(
     )
   ),
   
-  #9 Loan Applications by County map/tables
+  #8 Loan Applications by County map/tables
   h2("Loan Applications by County", align = "center"),
   fluidRow(
     column(6,

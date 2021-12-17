@@ -85,6 +85,15 @@ shinyServer(function(input, output) {
         filter(derived_dwelling_category %in% input$derived_dwelling_category)
     }
     
+    # filter6 activity_year
+    if("All" %in% input$activity_year  ){
+      data = data
+    }
+    else{
+      data = data %>%
+        filter(activity_year %in% input$activity_year)
+    }
+    
   })
   
   # filter 2nd LEI data based on the selections from the input
@@ -137,6 +146,15 @@ shinyServer(function(input, output) {
         filter(derived_dwelling_category %in% input$derived_dwelling_category)
     }
     
+    # filter6 activity_year
+    if("All" %in% input$activity_year  ){
+      data = data
+    }
+    else{
+      data = data %>%
+        filter(activity_year %in% input$activity_year)
+    }
+    
   })
   
   # separator function for big mark and decimal mark of numbers
@@ -144,8 +162,8 @@ shinyServer(function(input, output) {
     format(as.numeric(x), big.mark = ",", decimal.mark = ".")
   }
   
-  #2 Plot/table of loans by sex
-  # source("plots_tables/race.R")
+  #1 Race and race census plots/tables
+  # output$racePlot1 <- renderPlot({source("plots_tables/race.R", local = TRUE)})
   
   #1 Plot of loans by race
   output$racePlot1 <- renderPlot({
@@ -162,7 +180,7 @@ shinyServer(function(input, output) {
       theme(text = element_text(size = 20), legend.position = "none")+
       coord_flip()
   })
-  
+
   output$racePlot2 <- renderPlot({
     data_filtered2() %>%
       count(derived_race = factor(derived_race)) %>%
@@ -177,15 +195,15 @@ shinyServer(function(input, output) {
       theme(text = element_text(size = 20), legend.position = "none")+
       coord_flip()
   })
-  
+
   output$raceCensusPlot1 <- renderPlot({
-    
+
   })
-  
+
   output$raceCensusPlot2 <- renderPlot({
-    
+
   })
-  
+
   #1 Tables of loans by race
   output$raceTable1<- renderDataTable(rownames = FALSE,
                                       options = list(columnDefs = list(list(className = 'dt-right', targets = 0:1))),
@@ -199,7 +217,7 @@ shinyServer(function(input, output) {
                                           arrange(desc(Percent)) %>%
                                           rename(., `Derived Race` = derived_race, Loans = n)
                                       })
-  
+
   output$raceTable2<- renderDataTable(rownames = FALSE,
                                       options = list(columnDefs = list(list(className = 'dt-right', targets = 0:1))),
                                       {
@@ -213,13 +231,21 @@ shinyServer(function(input, output) {
                                           rename(., `Derived Race` = derived_race, Loans = n)
                                       })
   
-  #2 Plot/table of loans by sex
+  #2 Sex and sex census plots/tables
   
   
-  #3 Plot/table of loans by age
+  #3 Age and age census plots/tables
   
   
-  #4 Plot/table of loans by disability
+  #4 Distribution of Loan Amounts plots/tables
+
+  #5 Applicants' Credit Scores plots/tables
+
+  #6 Denial Reasons of Loan Applications plots/tables
+
+  #7 Loan Applications by Action Taken plots/tables
+  
+  #8 Loan Applications by County map/tables
   
   
   
