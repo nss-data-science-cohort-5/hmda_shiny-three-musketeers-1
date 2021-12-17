@@ -4,19 +4,23 @@ library(jsonlite)
 library(splitstackshape)
 library(sf)
 
-# Create queries for FFIEC API pull.
-hmda_queries <- list(states = "WA",
-                      years = "2020")
+# Create HMDA API data pull for multiple years using map.
+years <- c("2019", "2020")
 
-# Set base URL for FFIEC API pull.
-hmda_base_url <- c("https://ffiec.cfpb.gov/v2/data-browser-api/view/csv")
+hmda <- map(years, function(year) {
+  hmda_queries <- list(states = "WA",
+                       years = year)
+  hmda_base_url <- c("https://ffiec.cfpb.gov/v2/data-browser-api/view/csv")
+  hmda_request <- GET(url = hmda_base_url, query = hmda_queries)
+  read_csv(content(hmda_request), 
+           col_types = cols(.default = "?", 
+                            total_units = "c"))
 
-# FFIEC API data, then read as a csv.
-hmda_request <- GET(url = hmda_base_url, query = hmda_queries)
+}) %>% bind_rows()
 
-hmda <- read_csv(content(hmda_request))
 
-# Obtain LAR key for data codes. Downloaded from CFPB GitHub repol
+
+# Obtain LAR key for data codes. Downloaded from CFPB GitHub repo.
 lar <- read_csv("data/lar.csv",  
                 col_select = c("Data Field Name", 
                                "Descriptions and Examples",
@@ -242,8 +246,6 @@ census_stats <- c("NAME",
                   "S0101_C01_018E",
                   # Age 85+
                   "S0101_C01_019E",
-                  # Disability
-                  "S1810_C01_001E",
                   # Poverty Status
                   "S1701_C01_001E",
                   # Males
@@ -261,6 +263,8 @@ census2_stats <- c("NAME",
                    "B02001_004E",
                    # Asian
                    "B02001_005E",
+                   # Pacific Islander
+                   "B02001_006E",
                    # Multi-Racial
                    "B02001_008E",
                    # Latino
@@ -312,7 +316,6 @@ census_names <- c("Name",
                   "Age 75 - 79",
                   "Age 80 - 84",
                   "Age 85+",
-                  "Disability",
                   "Poverty Status",
                   "Males",
                   "Females",
@@ -324,6 +327,7 @@ census2_names <- c("Name",
                   "African-American",
                   "Native American",
                   "Asian",
+                  "Pacific Islander",
                   "Multi-Racial",
                   "Latino",
                   "State",
@@ -357,18 +361,17 @@ census <- census %>%
 
 # Clean-up census for ages to match hmda values.
 census <- census %>%
-  select(starts_with("Age")) %>% 
-  mutate_all(as.numeric) %>% 
-  rowwise() %>% 
-  mutate("Area <25" = sum(.[,1:5], na.rm = TRUE),
-         "Area 25-34" = sum(.[,6:7], na.rm = TRUE),
-         "Area 35-44" = sum(.[,8:9], na.rm = TRUE),
-         "Area 45-54" = sum(.[,10:11], na.rm = TRUE),
-         "Area 55-64" = sum(.[,12:13], na.rm = TRUE),
-         "Area 65-74" = sum(.[,14:15], na.rm = TRUE),
-         "Area >75" = sum(.[,16:18], na.rm = TRUE)) %>% 
-  select(-(1:18)) %>% 
-  bind_cols(census) %>% 
+  select(starts_with("Age")) %>%
+  mutate_all(as.numeric) %>%
+  mutate("Area <25" = rowSums(.[,1:5]),
+         "Area 25-34" = rowSums(.[,6:7]),
+         "Area 35-44" = rowSums(.[,8:9]),
+         "Area 45-54" = rowSums(.[,10:11]),
+         "Area 55-64" = rowSums(.[,12:13]),
+         "Area 65-74" = rowSums(.[,14:15]),
+         "Area >75" = rowSums(.[,16:18])) %>%
+  select(-(1:18)) %>%
+  bind_cols(census) %>%
   select(-(10:27))
 
 # Read in shapefile of census tracts in WA and write shapefile

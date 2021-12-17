@@ -12,6 +12,15 @@ age_levels <- c("<25",
                 "65-74", 
                 ">74")
 
+# hmda_lei_census %>%
+#   count(applicant_age = factor(applicant_age, levels = age_levels)) %>%
+#   drop_na() %>% 
+#   pivot_wider(names_from = applicant_age, values_from = c(n))
+# 
+# hmda_lei_census %>% 
+#   select(starts_with("Area")) %>% 
+#   distinct()
+
 # Barplot of percentages of applicant ages to be inputted into Server.R.
 hmda_lei_census %>%
   count(applicant_age = factor(applicant_age, levels = age_levels)) %>%
