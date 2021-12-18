@@ -37,7 +37,7 @@ shinyServer(function(input, output) {
   # data_filtered1 <- data_filtered(input$lei1, input$county1)
   
   data_filtered1 <- reactive({
-
+    
     # filter1 lei
     if ("All" %in% input$lei1  ){
       data = hmda_lei_census
@@ -46,7 +46,7 @@ shinyServer(function(input, output) {
       data = hmda_lei_census %>%
         filter(`Entity Name` %in% input$lei1)
     }
-
+    
     # filter2 county
     if("All" %in% input$county1  ){
       data = data
@@ -180,7 +180,7 @@ shinyServer(function(input, output) {
       theme(text = element_text(size = 20), legend.position = "none")+
       coord_flip()
   })
-
+  
   output$racePlot2 <- renderPlot({
     data_filtered2() %>%
       count(derived_race = factor(derived_race)) %>%
@@ -195,15 +195,15 @@ shinyServer(function(input, output) {
       theme(text = element_text(size = 20), legend.position = "none")+
       coord_flip()
   })
-
+  
   output$raceCensusPlot1 <- renderPlot({
-
+    
   })
-
+  
   output$raceCensusPlot2 <- renderPlot({
-
+    
   })
-
+  
   #1 Tables of loans by race
   output$raceTable1<- renderDataTable(rownames = FALSE,
                                       options = list(columnDefs = list(list(className = 'dt-right', targets = 0:1))),
@@ -217,7 +217,7 @@ shinyServer(function(input, output) {
                                           arrange(desc(Percent)) %>%
                                           rename(., `Derived Race` = derived_race, Loans = n)
                                       })
-
+  
   output$raceTable2<- renderDataTable(rownames = FALSE,
                                       options = list(columnDefs = list(list(className = 'dt-right', targets = 0:1))),
                                       {
@@ -234,11 +234,12 @@ shinyServer(function(input, output) {
   #2 Sex and sex census plots/tables
   
   
-
+  
+  
   #3 Age plots/tables
   
   output$agePlot1 <- renderPlot({
-    filter_by_geo(data_filtered1()) %>% 
+    filter_age(data_filtered1()) %>% 
       filter(grepl("Percentage", Category)) %>% 
       ggplot(aes(x = Group, 
                  y = Value, 
@@ -254,7 +255,7 @@ shinyServer(function(input, output) {
            title = "Applicant Age Group Percentage")
   })
   output$agePlot2 <- renderPlot({
-    filter_by_geo(data_filtered2()) %>% 
+    filter_age(data_filtered2()) %>% 
       filter(grepl("Total", Category)) %>% 
       ggplot(aes(x = Group, 
                  y = Value, 
@@ -270,7 +271,7 @@ shinyServer(function(input, output) {
     rownames = FALSE,
     options = list(dom = 't'),
     { 
-      filter_by_geo(data_filtered1()) %>%
+      filter_age(data_filtered1()) %>%
         pivot_wider(names_from = "Category", values_from = "Value") %>% 
         mutate("Applicant Percentage" = sapply(.[["Applicant Percentage"]],
                                                label_percent()),
@@ -286,7 +287,7 @@ shinyServer(function(input, output) {
     rownames = FALSE,
     options = list(dom = 't'),
     { 
-      filter_by_geo(data_filtered2()) %>%
+      filter_age(data_filtered2()) %>%
         pivot_wider(names_from = "Category", values_from = "Value") %>% 
         mutate("Applicant Percentage" = sapply(.[["Applicant Percentage"]],
                                                label_percent()),
@@ -297,19 +298,82 @@ shinyServer(function(input, output) {
                "Applicant Total" = prettyNum(.[["Applicant Total"]], big.mark = ",")) %>% 
         relocate("Applicant Total", .before = "Applicant Percentage")
     })
-      
-      
-
-  #3 Age and age census plots/tables
   
   
-
   #4 Distribution of Loan Amounts plots/tables
-
-  #5 Applicants' Credit Scores plots/tables
-
+  
+  
+  
   #6 Denial Reasons of Loan Applications plots/tables
-
+  
+  output$denialPlot1 <- renderPlot({
+    data_filtered1()%>%
+      filter(action_taken == "Application denied") %>%
+      select(`denial_reason-1`) %>% 
+      drop_na() %>%
+      count(`denial_reason-1` = factor(`denial_reason-1`)) %>%
+      mutate(pct = prop.table(n)) %>%
+      ggplot(aes(x = reorder(`denial_reason-1`, pct), y = pct, fill = `denial_reason-1`, label = scales::percent(pct))) +
+      geom_col() +
+      # geom_text(position = position_dodge(width = .9),    # move to center of bars
+      #           vjust = -0.5,    # nudge above top of bar
+      #           size = 5) +
+      scale_y_continuous(labels = scales::percent)+
+      labs(y = "Percent", x= "")+
+      theme(text = element_text(size = 20), legend.position = "none")+
+      coord_flip()
+  })
+  
+  output$denialPlot2 <- renderPlot({
+    data_filtered2()%>%
+      filter(action_taken == "Application denied") %>%
+      select(`denial_reason-1`) %>% 
+      drop_na() %>%
+      count(`denial_reason-1` = factor(`denial_reason-1`)) %>%
+      mutate(pct = prop.table(n)) %>%
+      ggplot(aes(x = reorder(`denial_reason-1`, pct), y = pct, fill = `denial_reason-1`, label = scales::percent(pct))) +
+      geom_col() +
+      # geom_text(position = position_dodge(width = .9),    # move to center of bars
+      #           vjust = -0.5,    # nudge above top of bar
+      #           size = 5) +
+      scale_y_continuous(labels = scales::percent)+
+      labs(y = "Percent", x= "")+
+      theme(text = element_text(size = 20), legend.position = "none")+
+      coord_flip()
+  })
+  
+  output$denialTable1<- renderDataTable(rownames = FALSE,
+                                        options = list(columnDefs = list(list(className = 'dt-right', targets = 0:1))),
+                                        {
+                                          data_filtered1() %>%
+                                            filter(action_taken == "Application denied") %>%
+                                            select(`denial_reason-1`) %>% 
+                                            drop_na() %>%
+                                            count(`denial_reason-1`) %>%
+                                            mutate(Percent = n/sum(n)*100)%>%
+                                            data.frame() %>%
+                                            mutate_at(vars(Percent), funs(round(.,2))) %>%
+                                            mutate_at(vars(n), separator) %>%
+                                            arrange(desc(Percent)) %>%
+                                            rename(., `Denial Reasons` = `denial_reason.1`, Loans = n)
+                                        })
+  
+  output$denialTable2<- renderDataTable(rownames = FALSE,
+                                        options = list(columnDefs = list(list(className = 'dt-right', targets = 0:1))),
+                                        {
+                                          data_filtered2() %>%
+                                            filter(action_taken == "Application denied") %>%
+                                            select(`denial_reason-1`) %>% 
+                                            drop_na() %>%
+                                            count(`denial_reason-1`) %>%
+                                            mutate(Percent = n/sum(n)*100)%>%
+                                            data.frame() %>%
+                                            mutate_at(vars(Percent), funs(round(.,2))) %>%
+                                            mutate_at(vars(n), separator) %>%
+                                            arrange(desc(Percent)) %>%
+                                            rename(., `Denial Reasons` = `denial_reason.1`, Loans = n)
+                                        })
+  
   #7 Loan Applications by Action Taken plots/tables
   
   #8 Loan Applications by County map/tables

@@ -60,7 +60,8 @@ shinyUI(fluidPage(
                        choices = c("All", hmda_lei_census %>%
                                      pull(Name) %>% 
                                      unique() %>% 
-                                     sort()))),
+                                     sort()))
+    )
   ),
   
   hr(),
@@ -197,23 +198,6 @@ shinyUI(fluidPage(
     )
   ),
   
-  #5 Applicants' Credit Scores plots/tables
-  h2("Applicants' Credit Scores", align = "center"),
-  fluidRow(
-    column(6,
-           tabsetPanel(
-             tabPanel("Plot", plotOutput("creditPlot1")),
-             tabPanel("Table", dataTableOutput("creditTable1"))
-           )
-    ),
-    
-    column(6,
-           tabsetPanel(
-             tabPanel("Plot", plotOutput("creditPlot2")),
-             tabPanel("Table", dataTableOutput("creditTable2"))
-           )
-    )
-  ),
   
   #6 Denial Reasons of Loan Applications plots/tables
   h2("Denial Reasons of Loan Applications", align = "center"),
@@ -268,6 +252,6 @@ shinyUI(fluidPage(
            )
     )
   )
-
+  
 )
 )
