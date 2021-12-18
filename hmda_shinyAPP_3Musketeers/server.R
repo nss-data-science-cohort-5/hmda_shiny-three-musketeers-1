@@ -234,6 +234,7 @@ shinyServer(function(input, output) {
   #2 Sex and sex census plots/tables
   
   
+
   #3 Age plots/tables
   
   output$agePlot1 <- renderPlot({
@@ -298,6 +299,11 @@ shinyServer(function(input, output) {
     })
       
       
+
+  #3 Age and age census plots/tables
+  
+  
+
   #4 Distribution of Loan Amounts plots/tables
 
   #5 Applicants' Credit Scores plots/tables

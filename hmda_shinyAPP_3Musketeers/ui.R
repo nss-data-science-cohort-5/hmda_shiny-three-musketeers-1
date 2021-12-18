@@ -167,14 +167,26 @@ shinyUI(fluidPage(
     column(6,
            tabsetPanel(
              tabPanel("Plot", plotOutput("agePlot1")),
+
              tabPanel("Table", dataTableOutput("ageTable1"))
+
+             tabPanel("Table", dataTableOutput("ageTable1")),
+             tabPanel("Census Plot", plotOutput("ageCensusPlot1")),
+             tabPanel("Census Table", dataTableOutput("ageCensusTable1"))
+
            )
     ),
     
     column(6,
            tabsetPanel(
              tabPanel("Plot", plotOutput("agePlot2")),
+
              tabPanel("Table", dataTableOutput("ageTable2"))
+
+             tabPanel("Table", dataTableOutput("agTeable2")),
+             tabPanel("Census Plot", plotOutput("ageCensusPlot2")),
+             tabPanel("Census Table", dataTableOutput("ageCensusTable2"))
+
            )
     )
   ),
