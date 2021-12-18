@@ -1,14 +1,35 @@
 # HMDA shiny app
 
-library(shiny)
-
 # Define UI for application
 shinyUI(fluidPage(
   
+  theme = shinytheme("darkly"),
+
   # Application title
-  titlePanel(
-    h1("Fair lending analysis", align = "center")
-  ),
+  titlePanel(title = "", windowTitle = "Fair Lending Analysis"),  
+  tags$style(HTML("
+                    .dataTables_wrapper .dataTables_length, 
+                    .dataTables_wrapper .dataTables_filter, 
+                    .dataTables_wrapper .dataTables_info, 
+                    .dataTables_wrapper .dataTables_processing, 
+                    .dataTables_wrapper .dataTables_paginate, 
+                    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+                    color: #ffffff;
+                    }
+                    
+                    thead {
+                    color: #ffffff;
+                    }
+
+                     tbody {
+                    color: #000000;
+                    }
+
+                   "
+                  
+                  
+  )),  
+  h1("Fair Lending Analysis", align = "center"),
   h4("Created by Chris Harrelson, Eli Lavender, and Alex Zhang", align = "center"),
   h4("Nashville Software School Data Science Cohort 5", align = "center"),
   
@@ -166,14 +187,16 @@ shinyUI(fluidPage(
   fluidRow(
     column(6,
            tabsetPanel(
-             tabPanel("Plot", plotOutput("agePlot1")),
+             tabPanel("Percentage Plot", plotOutput("agePlot1_1")),
+             tabPanel("Count Plot", plotOutput("agePlot1_2")),
              tabPanel("Table", dataTableOutput("ageTable1"))
            )
     ),
     
     column(6,
            tabsetPanel(
-             tabPanel("Plot", plotOutput("agePlot2")),
+             tabPanel("Percentage Plot", plotOutput("agePlot2_1")),
+             tabPanel("Count Plot", plotOutput("agePlot2_2")),
              tabPanel("Table", dataTableOutput("ageTable2"))
            )
     )
@@ -197,25 +220,7 @@ shinyUI(fluidPage(
     )
   ),
   
-  #5 Applicants' Credit Scores plots/tables
-  h2("Applicants' Credit Scores", align = "center"),
-  fluidRow(
-    column(6,
-           tabsetPanel(
-             tabPanel("Plot", plotOutput("creditPlot1")),
-             tabPanel("Table", dataTableOutput("creditTable1"))
-           )
-    ),
-    
-    column(6,
-           tabsetPanel(
-             tabPanel("Plot", plotOutput("creditPlot2")),
-             tabPanel("Table", dataTableOutput("creditTable2"))
-           )
-    )
-  ),
-  
-  #6 Denial Reasons of Loan Applications plots/tables
+  #5 Denial Reasons of Loan Applications plots/tables
   h2("Denial Reasons of Loan Applications", align = "center"),
   fluidRow(
     column(6,
@@ -233,7 +238,7 @@ shinyUI(fluidPage(
     )
   ),
   
-  #7 Loan Applications by Action Taken plots/tables
+  #6 Loan Applications by Action Taken plots/tables
   h2("Loan Applications by Action Taken", align = "center"),
   fluidRow(
     column(6,
@@ -251,23 +256,15 @@ shinyUI(fluidPage(
     )
   ),
   
-  #8 Loan Applications by County map/tables
+  #7 Loan Applications Map by County
   h2("Loan Applications by County", align = "center"),
   fluidRow(
     column(6,
-           tabsetPanel(
-             tabPanel("Plot", plotOutput("mapPlot1")),
-             tabPanel("Table", dataTableOutput("mapTable1"))
-           )
+           plotOutput("mapPlot1")
     ),
-    
     column(6,
-           tabsetPanel(
-             tabPanel("Plot", plotOutput("mapPlot2")),
-             tabPanel("Table", dataTableOutput("mapTable2"))
-           )
+           plotOutput("mapPlot2")
     )
   )
-
 )
 )
