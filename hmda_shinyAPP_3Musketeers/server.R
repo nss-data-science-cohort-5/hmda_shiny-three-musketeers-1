@@ -339,7 +339,7 @@ shinyServer(function(input, output) {
   
   output$agePlot1_1 <- renderPlot({
     filter_age(data_filtered1()) %>% 
-      fill(0) %>% 
+      fill(Value, 0) %>% 
       filter(grepl("Percentage", Category)) %>% 
       ggplot(aes(x = Group, 
                  y = Value, 
@@ -357,7 +357,7 @@ shinyServer(function(input, output) {
   })
   output$agePlot1_2 <- renderPlot({
     filter_age(data_filtered1()) %>% 
-      fill(0) %>% 
+      fill(Value, 0) %>% 
       filter(grepl("Total", Category)) %>% 
       ggplot(aes(x = Group, 
                  y = Value, 
@@ -373,7 +373,7 @@ shinyServer(function(input, output) {
   
   output$agePlot2_1 <- renderPlot({
     filter_age(data_filtered2()) %>% 
-      fill(0) %>% 
+      fill(Value, 0) %>% 
       filter(grepl("Percentage", Category)) %>% 
       ggplot(aes(x = Group, 
                  y = Value, 
@@ -391,7 +391,7 @@ shinyServer(function(input, output) {
   })
   output$agePlot2_2 <- renderPlot({
     filter_age(data_filtered2()) %>% 
-      fill(0) %>% 
+      fill(Value, 0) %>% 
       filter(grepl("Total", Category)) %>% 
       ggplot(aes(x = Group, 
                  y = Value, 
@@ -421,7 +421,8 @@ shinyServer(function(input, output) {
         rename("Applicant Age Group" = "Group") %>% 
         mutate("Area Total" = prettyNum(.[["Area Total"]], big.mark = ","),
                "Applicant Total" = prettyNum(.[["Applicant Total"]], big.mark = ",")) %>% 
-        relocate("Applicant Total", .before = "Applicant Percentage")
+        relocate("Applicant Total", .before = "Applicant Percentage") %>% 
+        relocate("Area Total", .before = "Area Percentage")
     })
   
   output$ageTable2 <- renderDataTable(
@@ -440,7 +441,8 @@ shinyServer(function(input, output) {
         rename("Applicant Age Group" = "Group") %>% 
         mutate("Area Total" = prettyNum(.[["Area Total"]], big.mark = ","),
                "Applicant Total" = prettyNum(.[["Applicant Total"]], big.mark = ",")) %>% 
-        relocate("Applicant Total", .before = "Applicant Percentage")
+        relocate("Applicant Total", .before = "Applicant Percentage") %>% 
+        relocate("Area Total", .before = "Area Percentage")
     })
   
   #3 Age and age census plots/tables
@@ -459,7 +461,7 @@ shinyServer(function(input, output) {
   
   output$mapPlot1 <- renderPlot({
     filter_map(map_data_filtered1()) %>% 
-      fill(0) %>% 
+      fill(Aggregate_Number, 0) %>% 
       ggplot() + 
       geom_sf(aes(fill = Aggregate_Number),
               lwd = 0) +
@@ -485,7 +487,7 @@ shinyServer(function(input, output) {
   
   output$mapPlot2 <- renderPlot({
     filter_map(map_data_filtered2()) %>% 
-      fill(0) %>% 
+      fill(Aggregate_Number, 0) %>% 
       ggplot() + 
       geom_sf(aes(fill = Aggregate_Number),
               lwd = 0) +
@@ -511,7 +513,7 @@ shinyServer(function(input, output) {
   
   output$mapPctPlot1 <- renderPlot({
     filter_map(map_data_filtered2()) %>% 
-      fill(0) %>% 
+      fill(Pct_Aggregate_Number, 0) %>% 
       ggplot() + 
       geom_sf(aes(fill = Pct_Aggregate_Number),
               lwd = 0) +
@@ -536,7 +538,7 @@ shinyServer(function(input, output) {
   
   output$mapPctPlot2 <- renderPlot({
     filter_map(map_data_filtered2()) %>% 
-      fill(0) %>%
+      fill(Pct_Aggregate_Number, 0) %>%
       ggplot() + 
       geom_sf(aes(fill = Pct_Aggregate_Number),
               lwd = 0) +
