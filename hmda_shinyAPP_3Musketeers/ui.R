@@ -260,10 +260,16 @@ shinyUI(fluidPage(
   h2("Loan Applications by County", align = "center"),
   fluidRow(
     column(6,
-           plotOutput("mapPlot1")
+           tabsetPanel(
+             tabPanel("Count Plot", plotOutput("mapPlot1")),
+             tabPanel("Percentage Plot", plotOutput("mapPctPlot1"))
+           )
     ),
     column(6,
-           plotOutput("mapPlot2")
+           tabsetPanel(
+             tabPanel("Count Plot", plotOutput("mapPlot2")),
+             tabPanel("Percentage Plot", plotOutput("mapPctPlot2"))
+           )
     )
   )
 )

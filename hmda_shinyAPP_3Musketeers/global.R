@@ -61,10 +61,23 @@ filter_age <- function(reactive) {
 }
 
 filter_map <- function(reactive) {
+  
+  population <- reactive %>% 
+    select("Name", "Total Population") %>% 
+    mutate(Name = str_remove(Name, " County, Washington")) %>% 
+    rename("Total_Population" = "Total Population") %>% 
+    distinct(Name, Total_Population)
+  
   map_data <- reactive %>% 
     count(Name) %>% 
     rename(Aggregate_Number = n) %>% 
     mutate(Name = str_remove(Name, " County, Washington")) %>% 
+    full_join(population) %>% 
+    rowwise() %>% 
+    mutate(Aggregate_Number = round(Aggregate_Number/Total_Population * 1000)) %>% 
+    ungroup() %>%
+    drop_na() %>% 
+    mutate(Pct_Aggregate_Number = Aggregate_Number/sum(Aggregate_Number)) %>% 
     full_join(first_map_data, by = c("Name" = "NAME")) %>% 
     fill(0) %>% 
     st_as_sf()

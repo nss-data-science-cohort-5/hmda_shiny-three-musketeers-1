@@ -302,7 +302,9 @@ shinyServer(function(input, output) {
   
   #1 Tables of loans by race
   output$raceTable1<- renderDataTable(rownames = FALSE,
-                                      options = list(dom = 't'),
+                                      options = list(dom = 't',
+                                                     columnDefs = list(list(className = 'dt-right', 
+                                                                            targets = 0:1))),
                                       {
                                         data_filtered1() %>%
                                           count(derived_race) %>%
@@ -315,7 +317,9 @@ shinyServer(function(input, output) {
                                       })
   
   output$raceTable2<- renderDataTable(rownames = FALSE,
-                                      options = list(dom = 't'),
+                                      options = list(dom = 't',
+                                                     columnDefs = list(list(className = 'dt-right', 
+                                                                            targets = 0:1))),
                                       {
                                         data_filtered2() %>%
                                           count(derived_race) %>%
@@ -341,7 +345,8 @@ shinyServer(function(input, output) {
                  y = Value, 
                  fill = Category, 
                  label = percent(Value))) +
-      geom_col(position = position_dodge(width = 1)) +
+      geom_col(position = position_dodge(width = 1),
+               color = "black") +
       geom_text(position = position_dodge(width = 1),
                 vjust = -0.5,
                 size = 3) +
@@ -357,7 +362,8 @@ shinyServer(function(input, output) {
       ggplot(aes(x = Group, 
                  y = Value, 
                  fill = Category)) +
-      geom_col(position = position_dodge(width = 1)) +
+      geom_col(position = position_dodge(width = 1),
+               color = "black") +
       scale_y_continuous(labels = comma) +
       labs(x = "Applicant Age Group",
            y = "Number of Applicants",
@@ -373,7 +379,8 @@ shinyServer(function(input, output) {
                  y = Value, 
                  fill = Category, 
                  label = percent(Value))) +
-      geom_col(position = position_dodge(width = 1)) +
+      geom_col(position = position_dodge(width = 1),
+               color = "black") +
       geom_text(position = position_dodge(width = 1),
                 vjust = -0.5,
                 size = 3) +
@@ -389,7 +396,8 @@ shinyServer(function(input, output) {
       ggplot(aes(x = Group, 
                  y = Value, 
                  fill = Category)) +
-      geom_col(position = position_dodge(width = 1)) +
+      geom_col(position = position_dodge(width = 1),
+               color = "black") +
       scale_y_continuous(labels = comma) +
       labs(x = "Applicant Age Group",
            y = "Number of Applicants",
@@ -399,7 +407,9 @@ shinyServer(function(input, output) {
   
   output$ageTable1 <- renderDataTable(
     rownames = FALSE,
-    options = list(dom = 't'),
+    options = list(dom = 't',
+                   columnDefs = list(list(className = 'dt-right', 
+                                          targets = 0:1))),
     { 
       filter_age(data_filtered1()) %>%
         fill(0) %>% 
@@ -416,7 +426,9 @@ shinyServer(function(input, output) {
   
   output$ageTable2 <- renderDataTable(
     rownames = FALSE,
-    options = list(dom = 't'),
+    options = list(dom = 't',
+                   columnDefs = list(list(className = 'dt-right', 
+                                          targets = 0:1))),
     { 
       filter_age(data_filtered2()) %>%
         fill(0) %>% 
@@ -453,18 +465,18 @@ shinyServer(function(input, output) {
               lwd = 0) +
       geom_text(aes(x = lat,
                     y = long,
-                    label = scales::comma(round(Aggregate_Number,0))),
+                    label = scales::comma(Aggregate_Number)),
                 size = 4) + 
-      labs(title = "Applicant Number by County") +
+      labs(title = "Applicant Number Per 1,000 by County") +
       theme_classic() + 
       theme(plot.title = element_text(hjust = 0.5,
                                       size = 20),
-            axis.line=element_blank(),
+            axis.line = element_blank(),
             axis.title.x = element_blank(),
             axis.title.y = element_blank(),
-            axis.text.x=element_blank(),
-            axis.text.y=element_blank(),
-            axis.ticks=element_blank(),
+            axis.text.x = element_blank(),
+            axis.text.y = element_blank(),
+            axis.ticks = element_blank(),
             legend.position = "None") + 
       scale_fill_gradient(low = "#10bee8", 
                           high = "#A0522D",
@@ -479,22 +491,72 @@ shinyServer(function(input, output) {
               lwd = 0) +
       geom_text(aes(x = lat,
                     y = long,
-                    label = scales::comma(round(Aggregate_Number,0))),
+                    label = scales::comma(Aggregate_Number)),
                 size = 4) + 
-      labs(title = "Applicant Number by County") +
+      labs(title = "Applicant Number Per 1,000 by County") +
+      theme_classic() + 
+      theme(plot.title = element_text(hjust = 0.5,
+                                      size = 20),
+            axis.line = element_blank(),
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank(),
+            axis.text.x = element_blank(),
+            axis.text.y = element_blank(),
+            axis.ticks = element_blank(),
+            legend.position = "None") + 
+      scale_fill_gradient(low = "#10bee8", 
+                          high = "#A0522D",
+                          trans = "log2")
+  })
+  
+  output$mapPctPlot1 <- renderPlot({
+    filter_map(map_data_filtered2()) %>% 
+      fill(0) %>% 
+      ggplot() + 
+      geom_sf(aes(fill = Pct_Aggregate_Number),
+              lwd = 0) +
+      geom_text(aes(x = lat,
+                    y = long,
+                    label = scales::percent(Pct_Aggregate_Number)),
+                size = 4) + 
+      labs(title = "Applicant Percentage by County") +
       theme_classic() + 
       theme(plot.title = element_text(hjust = 0.5,
                                       size = 20),
             axis.line=element_blank(),
             axis.title.x = element_blank(),
             axis.title.y = element_blank(),
-            axis.text.x=element_blank(),
-            axis.text.y=element_blank(),
-            axis.ticks=element_blank(),
+            axis.text.x = element_blank(),
+            axis.text.y = element_blank(),
+            axis.ticks = element_blank(),
             legend.position = "None") + 
       scale_fill_gradient(low = "#10bee8", 
-                          high = "#A0522D",
-                          trans = "log2")
+                          high = "#A0522D")
+  })
+  
+  output$mapPctPlot2 <- renderPlot({
+    filter_map(map_data_filtered2()) %>% 
+      fill(0) %>%
+      ggplot() + 
+      geom_sf(aes(fill = Pct_Aggregate_Number),
+              lwd = 0) +
+      geom_text(aes(x = lat,
+                    y = long,
+                    label = scales::percent(Pct_Aggregate_Number)),
+                size = 4) + 
+      labs(title = "Applicant Percentage by County") +
+      theme_classic() + 
+      theme(plot.title = element_text(hjust = 0.5,
+                                      size = 20),
+            axis.line = element_blank(),
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank(),
+            axis.text.x = element_blank(),
+            axis.text.y = element_blank(),
+            axis.ticks = element_blank(),
+            legend.position = "None") + 
+      scale_fill_gradient(low = "#10bee8", 
+                          high = "#A0522D")
   })
   
   
