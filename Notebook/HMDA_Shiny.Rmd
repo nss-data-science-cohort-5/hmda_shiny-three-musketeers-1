@@ -1,0 +1,51 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(httr)
+library(tidyverse)
+library(dplyr)
+library(jsonlite)
+```
+
+```{r}
+hmda <- read_csv("../Data/hmda_lei_census.csv")
+
+hmda
+```
+Loan Amt By Gender
+```{r}
+hmda %>% 
+  mutate(Gender = derived_sex) %>% 
+  group_by(Gender) %>% 
+  summarise(cnt = n()) %>% 
+  mutate(Freq = round(cnt / sum(cnt), 3)) %>% 
+  ggplot(aes(x = Gender, y = Freq, fill = Gender)) +
+    geom_col()
+```
+Distribution by loan amount
+```{r}
+ggplot(hmda, aes(x = loan_amount, fill = loan_amount)) +
+  geom_histogram(bins = 30) +
+  scale_x_continuous(name = "Loan Amount", limits = c(0, 1000000))
+```
+Distribution by loan amount as box plot
+```{r}
+#ggplot(hmda, aes(x = needs variable, y = loan_amount)) +
+  #geom_boxplot()
+```
+Percentage split by action taken
+```{r}
+hmda %>% 
+  group_by(action_taken) %>% 
+  summarise(cnt = n()) %>% 
+  mutate(Freq = round(cnt / sum(cnt), 3)) %>% 
+  ggplot(aes(x = action_taken, y = Freq, fill = action_taken)) +
+    geom_col() +
+    theme(axis.text.x = element_blank()) +
+    xlab("Action Taken")
+
+```
+
