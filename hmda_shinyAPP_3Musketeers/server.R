@@ -234,9 +234,76 @@ shinyServer(function(input, output) {
   #2 Sex and sex census plots/tables
   
   
+
+  #3 Age plots/tables
+  
+  output$agePlot1 <- renderPlot({
+    filter_by_geo(data_filtered1()) %>% 
+      filter(grepl("Percentage", Category)) %>% 
+      ggplot(aes(x = Group, 
+                 y = Value, 
+                 fill = Category, 
+                 label = percent(Value))) +
+      geom_col(position = position_dodge(width = 1)) +
+      geom_text(position = position_dodge(width = 1),
+                vjust = -0.5,
+                size = 3) +
+      scale_y_continuous(labels = percent) +
+      labs(x = "Applicant Age Group",
+           y = "Percentage of Applicants",
+           title = "Applicant Age Group Percentage")
+  })
+  output$agePlot2 <- renderPlot({
+    filter_by_geo(data_filtered2()) %>% 
+      filter(grepl("Total", Category)) %>% 
+      ggplot(aes(x = Group, 
+                 y = Value, 
+                 fill = Category)) +
+      geom_col(position = position_dodge(width = 1)) +
+      scale_y_continuous(labels = comma) +
+      labs(x = "Applicant Age Group",
+           y = "Number of Applicants",
+           title = "Applicant Age Group Totals")
+  })
+  
+  output$ageTable1 <- renderDataTable(
+    rownames = FALSE,
+    options = list(dom = 't'),
+    { 
+      filter_by_geo(data_filtered1()) %>%
+        pivot_wider(names_from = "Category", values_from = "Value") %>% 
+        mutate("Applicant Percentage" = sapply(.[["Applicant Percentage"]],
+                                               label_percent()),
+               "Area Percentage" = sapply(.[["Area Percentage"]],
+                                          label_percent())) %>%
+        rename("Applicant Age Group" = "Group", "Applicant Total" = "Total") %>% 
+        mutate("Area Total" = prettyNum(.[["Area Total"]], big.mark = ","),
+               "Applicant Total" = prettyNum(.[["Applicant Total"]], big.mark = ",")) %>% 
+        relocate("Applicant Total", .before = "Applicant Percentage")
+    })
+  
+  output$ageTable2 <- renderDataTable(
+    rownames = FALSE,
+    options = list(dom = 't'),
+    { 
+      filter_by_geo(data_filtered2()) %>%
+        pivot_wider(names_from = "Category", values_from = "Value") %>% 
+        mutate("Applicant Percentage" = sapply(.[["Applicant Percentage"]],
+                                               label_percent()),
+               "Area Percentage" = sapply(.[["Area Percentage"]],
+                                          label_percent())) %>%
+        rename("Applicant Age Group" = "Group", "Applicant Total" = "Total") %>% 
+        mutate("Area Total" = prettyNum(.[["Area Total"]], big.mark = ","),
+               "Applicant Total" = prettyNum(.[["Applicant Total"]], big.mark = ",")) %>% 
+        relocate("Applicant Total", .before = "Applicant Percentage")
+    })
+      
+      
+
   #3 Age and age census plots/tables
   
   
+
   #4 Distribution of Loan Amounts plots/tables
 
   #5 Applicants' Credit Scores plots/tables
