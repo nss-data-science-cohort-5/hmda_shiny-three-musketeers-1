@@ -252,7 +252,9 @@ shinyServer(function(input, output) {
                                       })
   
   output$raceCensusTable1<- renderDataTable(rownames = FALSE,
-                                            options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = 0:1))),
+                                            options = list(dom = 't',
+                                                           columnDefs = list(list(className = 'dt-right', 
+                                                                                  targets = 0:1))),
                                             {
                                               df <- data_filtered1() %>%
                                                 select(Name, White, `African-American`, `Native American`, Asian, `Multi-Racial`, Latino) %>%
@@ -284,7 +286,9 @@ shinyServer(function(input, output) {
                                             })
   
   output$raceCensusTable2<- renderDataTable(rownames = FALSE,
-                                            options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = 0:1))),
+                                            options = list(dom = 't',
+                                                           columnDefs = list(list(className = 'dt-right', 
+                                                                                  targets = 0:1))),
                                             {
                                               df <- data_filtered2() %>%
                                                 select(Name, White, `African-American`, `Native American`, Asian, `Multi-Racial`, Latino) %>%
@@ -423,7 +427,9 @@ shinyServer(function(input, output) {
   })
   
   output$denialTable1<- renderDataTable(rownames = FALSE,
-                                        options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = 0:1))),
+                                        options = list(dom = 't',
+                                                       columnDefs = list(list(className = 'dt-right', 
+                                                                              targets = 0:1))),
                                         {
                                           data_filtered1() %>%
                                             filter(action_taken == "Application denied") %>%
@@ -439,7 +445,9 @@ shinyServer(function(input, output) {
                                         })
   
   output$denialTable2<- renderDataTable(rownames = FALSE,
-                                        options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = 0:1))),
+                                        options = list(dom = 't',
+                                                       columnDefs = list(list(className = 'dt-right', 
+                                                                              targets = 0:1))),
                                         {
                                           data_filtered2() %>%
                                             filter(action_taken == "Application denied") %>%
