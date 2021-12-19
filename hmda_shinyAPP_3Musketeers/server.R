@@ -4,38 +4,6 @@ library(DT)
 # Define server logic required to generate plots and tables
 shinyServer(function(input, output) {
   
-  # observeEvent(input$debug, {
-  #   browser()
-  # })
-  
-  # filter 1st LEI data based on the selections from the input
-  
-  # data_filtered <- function(lei, county){
-  #   reactive({
-  #     
-  #     # filter1
-  #     if ("All" %in% lei  ){
-  #       data = hmda_lei_census
-  #     }
-  #     else {
-  #       data = hmda_lei_census %>% 
-  #         filter(`Entity Name` %in% lei)
-  #     }
-  #     
-  #     # filter2
-  #     if("All" %in% county  ){
-  #       data = data
-  #     }
-  #     else{
-  #       data = data %>% 
-  #         filter(Name %in% county)
-  #     }
-  #   })
-  #   
-  # }
-  # 
-  # data_filtered1 <- data_filtered(input$lei1, input$county1)
-  
   data_filtered1 <- reactive({
     
     # filter1 lei
@@ -163,7 +131,6 @@ shinyServer(function(input, output) {
   }
   
   #1 Race and race census plots/tables
-  # output$racePlot1 <- renderPlot({source("plots_tables/race.R", local = TRUE)})
   
   #1 Plot of loans by race
   output$racePlot1 <- renderPlot({
@@ -176,7 +143,7 @@ shinyServer(function(input, output) {
       #           vjust = -0.5,    # nudge above top of bar
       #           size = 5) +
       scale_y_continuous(labels = scales::percent)+
-      labs(y = "Percent", x= "")+
+      labs(y = "Percentage", x= "")+
       theme(text = element_text(size = 20), legend.position = "none")+
       coord_flip()
   })
@@ -191,22 +158,75 @@ shinyServer(function(input, output) {
       #           vjust = -0.5,    # nudge above top of bar
       #           size = 5) +
       scale_y_continuous(labels = scales::percent)+
-      labs(y = "Percent", x= "")+
+      labs(y = "Percentage", x= "")+
       theme(text = element_text(size = 20), legend.position = "none")+
       coord_flip()
   })
   
   output$raceCensusPlot1 <- renderPlot({
+    df <- data_filtered1() %>%
+      select(Name, White, `African-American`, `Native American`, Asian, `Multi-Racial`, Latino) %>%
+      group_by(Name) %>%
+      summarise(
+        White = mean(White),
+        `African-American` = mean(`African-American`),
+        `Native American`= mean(`Native American`),
+        Asian = mean(Asian),
+        `Multi-Racial`= mean(`Multi-Racial`),
+        Latino = mean(Latino)) %>%
+      drop_na() %>%
+      t() %>% 
+      data.frame() %>% 
+      slice_tail(n=6)
     
+    race <- rownames(df)
+    df <- data.frame(sapply(df, as.numeric))
+    df %>% 
+      mutate(total = rowSums(across(where(is.numeric)))) %>% 
+      mutate(pct = total/sum(total)) %>%
+      mutate(race = race) %>%
+      ggplot(aes(x = reorder(race, pct), y = pct, fill = race, label = scales::percent(pct))) +
+      geom_col() +
+      scale_y_continuous(labels = scales::percent)+
+      labs(y = "Percentage", x= "")+
+      theme(text = element_text(size = 20), legend.position = "none")+
+      coord_flip()
   })
   
   output$raceCensusPlot2 <- renderPlot({
+    df <- data_filtered2() %>%
+      select(Name, White, `African-American`, `Native American`, Asian, `Multi-Racial`, Latino) %>%
+      group_by(Name) %>%
+      summarise(
+        White = mean(White),
+        `African-American` = mean(`African-American`),
+        `Native American`= mean(`Native American`),
+        Asian = mean(Asian),
+        `Multi-Racial`= mean(`Multi-Racial`),
+        Latino = mean(Latino)) %>%
+      drop_na() %>%
+      t() %>% 
+      data.frame() %>% 
+      slice_tail(n=6)
     
+    race <- rownames(df)
+    df <- data.frame(sapply(df, as.numeric))
+    df %>% 
+      mutate(total = rowSums(across(where(is.numeric)))) %>% 
+      mutate(pct = total/sum(total)) %>%
+      mutate(race = race) %>%
+      ggplot(aes(x = reorder(race, pct), y = pct, fill = race, label = scales::percent(pct))) +
+      geom_col() +
+      scale_y_continuous(labels = scales::percent)+
+      labs(y = "Percentage", x= "")+
+      theme(text = element_text(size = 20), legend.position = "none")+
+      coord_flip()
   })
+  
   
   #1 Tables of loans by race
   output$raceTable1<- renderDataTable(rownames = FALSE,
-                                      options = list(columnDefs = list(list(className = 'dt-right', targets = 0:1))),
+                                      options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = 0:1))),
                                       {
                                         data_filtered1() %>%
                                           count(derived_race) %>%
@@ -231,9 +251,71 @@ shinyServer(function(input, output) {
                                           rename(., `Derived Race` = derived_race, Loans = n)
                                       })
   
+  output$raceCensusTable1<- renderDataTable(rownames = FALSE,
+                                            options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = 0:1))),
+                                            {
+                                              df <- data_filtered1() %>%
+                                                select(Name, White, `African-American`, `Native American`, Asian, `Multi-Racial`, Latino) %>%
+                                                group_by(Name) %>%
+                                                summarise(
+                                                  White = mean(White),
+                                                  `African-American` = mean(`African-American`),
+                                                  `Native American`= mean(`Native American`),
+                                                  Asian = mean(Asian),
+                                                  `Multi-Racial`= mean(`Multi-Racial`),
+                                                  Latino = mean(Latino)) %>%
+                                                drop_na() %>%
+                                                t() %>% 
+                                                data.frame() %>% 
+                                                slice_tail(n=6)
+                                              
+                                              race <- rownames(df)
+                                              df <- data.frame(sapply(df, as.numeric))
+                                              
+                                              df %>%
+                                                mutate(total = rowSums(across(where(is.numeric)))) %>%
+                                                mutate(pct = total/sum(total)*100) %>%
+                                                mutate(race = race) %>%
+                                                mutate_at(vars(pct), funs(round(.,2))) %>%
+                                                mutate_at(vars(total), separator) %>%
+                                                arrange(desc(pct)) %>%
+                                                rename(., Population = total, Percent = pct, Race = race) %>% 
+                                                select(Race, Population, Percent)
+                                            })
+  
+  output$raceCensusTable2<- renderDataTable(rownames = FALSE,
+                                            options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = 0:1))),
+                                            {
+                                              df <- data_filtered2() %>%
+                                                select(Name, White, `African-American`, `Native American`, Asian, `Multi-Racial`, Latino) %>%
+                                                group_by(Name) %>%
+                                                summarise(
+                                                  White = mean(White),
+                                                  `African-American` = mean(`African-American`),
+                                                  `Native American`= mean(`Native American`),
+                                                  Asian = mean(Asian),
+                                                  `Multi-Racial`= mean(`Multi-Racial`),
+                                                  Latino = mean(Latino)) %>%
+                                                drop_na() %>%
+                                                t() %>% 
+                                                data.frame() %>% 
+                                                slice_tail(n=6)
+                                              
+                                              race <- rownames(df)
+                                              df <- data.frame(sapply(df, as.numeric))
+                                              
+                                              df %>%
+                                                mutate(total = rowSums(across(where(is.numeric)))) %>%
+                                                mutate(pct = total/sum(total)*100) %>%
+                                                mutate(race = race) %>%
+                                                mutate_at(vars(pct), funs(round(.,2))) %>%
+                                                mutate_at(vars(total), separator) %>%
+                                                arrange(desc(pct)) %>%
+                                                rename(., Population = total, Percent = pct, Race = race) %>% 
+                                                select(Race, Population, Percent)
+                                            })
+  
   #2 Sex and sex census plots/tables
-  
-  
   
   
   #3 Age plots/tables
@@ -302,8 +384,6 @@ shinyServer(function(input, output) {
   
   #4 Distribution of Loan Amounts plots/tables
   
-  
-  
   #6 Denial Reasons of Loan Applications plots/tables
   
   output$denialPlot1 <- renderPlot({
@@ -343,7 +423,7 @@ shinyServer(function(input, output) {
   })
   
   output$denialTable1<- renderDataTable(rownames = FALSE,
-                                        options = list(columnDefs = list(list(className = 'dt-right', targets = 0:1))),
+                                        options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = 0:1))),
                                         {
                                           data_filtered1() %>%
                                             filter(action_taken == "Application denied") %>%
@@ -359,7 +439,7 @@ shinyServer(function(input, output) {
                                         })
   
   output$denialTable2<- renderDataTable(rownames = FALSE,
-                                        options = list(columnDefs = list(list(className = 'dt-right', targets = 0:1))),
+                                        options = list(dom = 't', columnDefs = list(list(className = 'dt-right', targets = 0:1))),
                                         {
                                           data_filtered2() %>%
                                             filter(action_taken == "Application denied") %>%
@@ -377,8 +457,6 @@ shinyServer(function(input, output) {
   #7 Loan Applications by Action Taken plots/tables
   
   #8 Loan Applications by County map/tables
-  
-  
   
   
 })
