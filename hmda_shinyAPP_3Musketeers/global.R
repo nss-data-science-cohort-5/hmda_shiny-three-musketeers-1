@@ -7,6 +7,7 @@ library(sf)
 
 hmda_lei_census <- read_csv("data/hmda_lei_census.csv")
 first_map_data <- read_sf("data/wash.shp")
+ll_map_data <- read_sf("data/ll_map_data.shp")
 
 age_levels <- c("25-34", 
                 "35-44", 
@@ -94,6 +95,15 @@ filter_map <- function(reactive) {
   
   return(map_data)
 }
+
+
+# Labels for leaflet plot.
+labels <- paste(
+  "<strong>",ll_map_data$Name,"</strong><br/>",
+  "Denials Per 1,000 People: ",ll_map_data$COAT,"<br/>",
+  "Percentage POC: ",ll_map_data$POC,"%<br/>",
+  "Percentage Women: ",ll_map_data$Females,"%<br/>"
+) %>% lapply(htmltools::HTML)
 
 
 

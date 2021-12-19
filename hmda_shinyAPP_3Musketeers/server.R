@@ -260,7 +260,7 @@ shinyServer(function(input, output) {
   })
   
   output$raceCensusPlot1 <- renderPlot({
-
+    
     df <- data_filtered1() %>%
       select(Name, White, `African-American`, `Native American`, Asian, `Multi-Racial`, Latino) %>%
       group_by(Name) %>%
@@ -319,7 +319,7 @@ shinyServer(function(input, output) {
       theme(text = element_text(size = 20), legend.position = "none")+
       coord_flip()
   })
- 
+  
   #1 Tables of loans by race
   output$raceTable1<- renderDataTable(rownames = FALSE,
                                       options = list(dom = 't',
@@ -421,7 +421,7 @@ shinyServer(function(input, output) {
   
   #2 Sex and sex census plots/tables
   
- 
+  
   #3 Age plots/tables
   
   output$agePlot1_1 <- renderPlot({
@@ -476,7 +476,7 @@ shinyServer(function(input, output) {
            y = "Percentage of Applicants",
            title = "Applicant Age Group Percentage")
   })
-
+  
   output$agePlot2_2 <- renderPlot({
     filter_age(data_filtered2()) %>% 
       fill(Value, 0) %>% 
@@ -497,7 +497,7 @@ shinyServer(function(input, output) {
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', 
-                                          targets = 0:1))),
+                                          targets = 0:4))),
     { 
       filter_age(data_filtered1()) %>%
         fill(0) %>% 
@@ -517,7 +517,7 @@ shinyServer(function(input, output) {
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', 
-                                          targets = 0:1))),
+                                          targets = 0:4))),
     { 
       filter_age(data_filtered2()) %>%
         fill(0) %>% 
@@ -535,8 +535,8 @@ shinyServer(function(input, output) {
   
   #4 Distribution of Loan Amounts plots/tables
   
- 
-
+  
+  
   #6 Denial Reasons of Loan Applications plots/tables
   output$denialPlot1 <- renderPlot({
     data_filtered1()%>%
@@ -555,7 +555,7 @@ shinyServer(function(input, output) {
       theme(text = element_text(size = 20), legend.position = "none")+
       coord_flip()
   })
- 
+  
   output$denialPlot2 <- renderPlot({
     data_filtered2()%>%
       filter(action_taken == "Application denied") %>%
@@ -591,8 +591,8 @@ shinyServer(function(input, output) {
                                             arrange(desc(Percent)) %>%
                                             rename(., `Denial Reasons` = `denial_reason.1`, Loans = n)
                                         })
-    
-    output$denialTable2<- renderDataTable(rownames = FALSE,
+  
+  output$denialTable2<- renderDataTable(rownames = FALSE,
                                         options = list(dom = 't',
                                                        columnDefs = list(list(className = 'dt-right', 
                                                                               targets = 0:1))),
@@ -609,10 +609,10 @@ shinyServer(function(input, output) {
                                             arrange(desc(Percent)) %>%
                                             rename(., `Denial Reasons` = `denial_reason.1`, Loans = n)
                                         })
-
-    
+  
+  
   #7 Loan Applications by Action Taken plots/tables
-    
+  
   #8 Loan Applications by County map/tables
   output$mapPlot1 <- renderPlot({
     filter_map(map_data_filtered1()) %>% 
@@ -715,13 +715,25 @@ shinyServer(function(input, output) {
       scale_fill_gradient(low = "#10bee8", 
                           high = "#A0522D")
   })
-
+  
+  output$leafletPlot <- renderLeaflet({
+    leaflet(ll_map_data) %>% 
+      addProviderTiles(providers$Esri.NatGeoWorldMap) %>% 
+      addPolygons(color = "black",
+                  weight = 1,
+                  fillOpacity = 0.8,
+                  fillColor = ~colorQuantile("Reds", COAT)(COAT),
+                  highlightOptions = highlightOptions(fillColor = "black",
+                                                      bringToFront = TRUE),
+                  label = labels)
+  })
   
   
   
-
   
-
+  
+  
+  
   
   
 })
