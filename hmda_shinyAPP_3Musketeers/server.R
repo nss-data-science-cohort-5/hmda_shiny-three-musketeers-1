@@ -232,9 +232,52 @@ shinyServer(function(input, output) {
                                       })
   
   #2 Sex and sex census plots/tables
-  
-  
-
+  #Sex plot 1
+  output$sexPlot1 <- renderPlot ({
+    data_filtered1() %>% 
+      mutate(Gender = derived_sex) %>% 
+      group_by(Gender) %>% 
+      summarise(cnt = n()) %>% 
+      mutate(Frequency = round(cnt / sum(cnt), 3)* 100) %>% 
+      ggplot(aes(x = Gender, y = Frequency, fill = Gender)) +
+      geom_col()
+  })
+  #Sex plot 2
+  output$sexPlot2 <- renderPlot ({
+    data_filtered2() %>% 
+      mutate(Gender = derived_sex) %>% 
+      group_by(Gender) %>% 
+      summarise(cnt = n()) %>% 
+      mutate(Frequency = round(cnt / sum(cnt), 3) * 100) %>% 
+      ggplot(aes(x = Gender, y = Frequency, fill = Gender)) +
+      geom_col()
+  })
+  #Sex Tables
+  output$sexTable1<- renderDataTable(rownames = FALSE,
+                                      options = list(columnDefs = list(list(className = 'dt-right', targets = 0:1))),
+                                     {
+                                       data_filtered1() %>% 
+                                         mutate(Gender = derived_sex) %>% 
+                                         group_by(Gender) %>% 
+                                         summarise(Count = n()) %>% 
+                                         mutate(Frequency = round(Count / sum(Count), 3) * 100) %>% 
+                                         mutate(Loans = Count) %>% 
+                                         select(Gender, Loans, Frequency) %>% 
+                                         arrange(desc(Frequency))
+                                      })
+  #Sex Table 2
+  output$sexTable2<- renderDataTable(rownames = FALSE,
+                                     options = list(columnDefs = list(list(className = 'dt-right', targets = 0:1))),
+                                     {
+                                       data_filtered2() %>% 
+                                         mutate(Gender = derived_sex) %>% 
+                                         group_by(Gender) %>% 
+                                         summarise(Count = n()) %>% 
+                                         mutate(Frequency = round(Count / sum(Count), 3) * 100) %>% 
+                                         mutate(Loans = Count) %>% 
+                                         select(Gender, Loans, Frequency) %>% 
+                                         arrange(desc(Frequency))
+                                     })
   #3 Age plots/tables
   
   output$agePlot1 <- renderPlot({
@@ -305,13 +348,62 @@ shinyServer(function(input, output) {
   
 
   #4 Distribution of Loan Amounts plots/tables
-
+  #distplot1
+  output$distPlot1 <- renderPlot ({
+  ggplot(data_filtered1(), aes(x = loan_amount, fill = loan_amount)) +
+    geom_histogram(bins = 30) +
+    scale_x_continuous(name = "Loan Amount", limits = c(0, 1000000))
+  })
+  #distplot2
+  output$distPlot2 <- renderPlot ({
+    ggplot(data_filtered1(), aes(x = loan_amount, fill = loan_amount)) +
+      geom_histogram(bins = 30) +
+      scale_x_continuous(name = "LoanAmount", limits = c(0, 1000000))
+  })
   #5 Applicants' Credit Scores plots/tables
 
   #6 Denial Reasons of Loan Applications plots/tables
 
   #7 Loan Applications by Action Taken plots/tables
-  
+  output$actionPlot1 <- renderPlot ({
+    data_filtered1() %>% 
+      group_by(action_taken) %>% 
+      summarise(cnt = n()) %>% 
+      mutate(Freq = round(cnt / sum(cnt), 3)) %>% 
+      ggplot(aes(x = action_taken, y = Freq, fill = action_taken)) +
+      geom_col() +
+      theme(axis.text.x = element_blank()) +
+      xlab("Action Taken")
+  })
+  #Action plot 2
+  output$actionPlot2 <- renderPlot ({
+    data_filtered2() %>% 
+      group_by(action_taken) %>% 
+      summarise(cnt = n()) %>% 
+      mutate(Freq = round(cnt / sum(cnt), 3)) %>% 
+      ggplot(aes(x = action_taken, y = Freq, fill = action_taken)) +
+      geom_col() +
+      theme(axis.text.x = element_blank()) +
+      xlab("Action Taken")
+  })
+  #action table 1
+  output$actionTable1<- renderDataTable(rownames = FALSE,
+                                        options = list(columnDefs = list(list(className = 'dt-right', targets = 0:1))),
+                                        {
+                                          data_filtered2() %>% 
+                                            group_by(action_taken) %>% 
+                                            summarise(Count = n()) %>% 
+                                            mutate(Frequency = round(Count / sum(Count), 3))
+                                        })
+  #action table 2
+  output$actionTable2<- renderDataTable(rownames = FALSE,
+                                     options = list(columnDefs = list(list(className = 'dt-right', targets = 0:1))),
+                                     {
+                                       data_filtered2() %>% 
+                                         group_by(action_taken) %>% 
+                                         summarise(Count = n()) %>% 
+                                         mutate(Frequency = round(Count / sum(Count), 3))
+                                     })
   #8 Loan Applications by County map/tables
   
   
