@@ -34,7 +34,7 @@ shinyUI(fluidPage(
   h4("Nashville Software School Data Science Cohort 5", align = "center"),
   
   br(),
-  h4("Type in or select one or multiple choices in dropdown menus", align = "center"),
+  h4("Type in or select one or multiple choices from the below dropdown menus:", align = "center"),
   
   hr(),
   
@@ -158,7 +158,6 @@ shinyUI(fluidPage(
   ),
   
   br(),
-  # hr(),
   
   #2 Sex and sex census plots/tables
   h2("Loan Applications by Applicants' Sex and Sex Data in Census", align = "center"),
@@ -167,8 +166,6 @@ shinyUI(fluidPage(
            tabsetPanel(
              tabPanel("Plot", plotOutput("sexPlot1")),
              tabPanel("Table", dataTableOutput("sexTable1")),
-             tabPanel("Census Plot", plotOutput("sexCensusPlot1")),
-             tabPanel("Census Table", dataTableOutput("sexCensusTable1"))
            )
     ),
     
@@ -176,8 +173,6 @@ shinyUI(fluidPage(
            tabsetPanel(
              tabPanel("Plot", plotOutput("sexPlot2")),
              tabPanel("Table", dataTableOutput("sexTable2")),
-             tabPanel("Census Plot", plotOutput("sexCensusPlot2")),
-             tabPanel("Census Table", dataTableOutput("sexCensusTable2"))
            )
     )
   ),
@@ -206,19 +201,13 @@ shinyUI(fluidPage(
   h2("Distribution of Loan Amounts", align = "center"),
   fluidRow(
     column(6,
-           tabsetPanel(
-             tabPanel("Plot", plotOutput("distPlot1")),
-             tabPanel("Table", dataTableOutput("distTable1"))
-           )
-    ),
+           plotOutput("distPlot1")
+           ),
     
     column(6,
-           tabsetPanel(
-             tabPanel("Plot", plotOutput("distPlot2")),
-             tabPanel("Table", dataTableOutput("distTable2"))
+           plotOutput("distPlot2")
            )
-    )
-  ),
+    ),
   
   #5 Denial Reasons of Loan Applications plots/tables
   h2("Denial Reasons of Loan Applications", align = "center"),
