@@ -271,7 +271,12 @@ shinyUI(fluidPage(
              tabPanel("Percentage Plot", plotOutput("mapPctPlot2"))
            )
     )
-  )
+  ),
+  
+  h2("Failed Loan Applications by County", align = "center"),
+  fluidRow(
+    leafletOutput("leafletPlot", height = 600)
+    )
 )
 )
 
