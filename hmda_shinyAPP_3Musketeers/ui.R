@@ -255,11 +255,17 @@ shinyUI(fluidPage(
   h3("Income to Loan Amount Ratios", align = "center"),
   fluidRow(
     column(6,
-           plotOutput("ratioPlot1")
+           tabsetPanel(
+             tabPanel("Plot", plotOutput("ratioPlot1")),
+             tabPanel("Table", dataTableOutput("ratioTable1"))
+           )
     ),
     
     column(6,
-           plotOutput("ratioPlot2")
+           tabsetPanel(
+             tabPanel("Plot", plotOutput("ratioPlot2")),
+             tabPanel("Table", dataTableOutput("ratioTable2"))
+           )
     )
   ),
   
