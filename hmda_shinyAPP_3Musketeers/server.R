@@ -645,10 +645,17 @@ shinyServer(function(input, output) {
   #distplot1
   output$distPlot1 <- renderPlot ({
     
-    ggplot(data_filtered1(), aes(x = loan_amount)) +
+    df_loan_amount <- data_filtered1() %>% 
+      pull(loan_amount)
+    
+    data_filtered1() %>% 
+      ggplot(aes(x = loan_amount)) +
       geom_histogram(breaks = seq(0,1000000, 50000),
                      fill = "blue",
                      color = "black") +
+      geom_vline(xintercept = median(df_loan_amount),        # Add line for mean
+                 col = "red",
+                 lwd = 1) +
       scale_x_continuous(name = "Loan Amount", 
                          limits = c(0, 1000000),
                          labels = dollar_format()) +
@@ -661,11 +668,18 @@ shinyServer(function(input, output) {
   })
   #distplot2
   output$distPlot2 <- renderPlot ({
+    
+    df_loan_amount <- data_filtered2() %>% 
+      pull(loan_amount)
+    
     ggplot(data_filtered2(), 
            aes(x = loan_amount)) +
       geom_histogram(breaks = seq(0,1000000, 50000),
                      fill = "blue",
                      color = "black") +
+      geom_vline(xintercept = median(df_loan_amount),        # Add line for mean
+                 col = "red",
+                 lwd = 1) +
       scale_x_continuous(name = "Loan Amount", 
                          limits = c(0, 1000000),
                          labels = dollar_format()) +
@@ -675,6 +689,90 @@ shinyServer(function(input, output) {
             text = element_text(size = 20),
             plot.margin = unit(c(0.3,1.025,0.3,0.3), "cm"))
   })
+  
+  # distTable1
+  output$distTable1<- renderDataTable(
+    caption = tags$caption("Statistics of Loan Amounts",
+                           style="color:white;text-align: Center;"),
+    rownames = FALSE,
+    options = list(dom = 't',
+                   columnDefs = list(list(className = 'dt-right', targets = 0:1))),
+    
+    {
+      data_filtered1() %>%
+        pull(loan_amount) %>% 
+        describe() %>%
+        as.matrix() %>% 
+        data.frame() %>%
+        rename(Mean = mean, 
+               Median = median, 
+               Min = min, 
+               Max = max, 
+               Range = range, 
+               Skew = skew, 
+               Kurtosis = kurtosis,
+               `Standard Error` = se,
+               `Standard Deviation` = sd
+        ) %>% 
+        select(Mean, 
+               Median, 
+               Min, 
+               Max, 
+               Range, 
+               Skew, 
+               Kurtosis,
+               `Standard Error`,
+               `Standard Deviation`) %>%
+        t() %>%
+        data.frame() %>%
+        rename(., Values = X1) %>%
+        mutate_at(vars(Values), funs(round(., 2))) %>% 
+        mutate_at(vars(Values), separator) %>%
+        mutate(Statistics = rownames(.)) %>% 
+        select(Statistics, Values)
+    })
+  
+  # distTable2
+  output$distTable2<- renderDataTable(
+    caption = tags$caption("Statistics of Loan Amounts",
+                           style="color:white;text-align: Center;"),
+    rownames = FALSE,
+    options = list(dom = 't',
+                   columnDefs = list(list(className = 'dt-right', targets = 0:1))),
+    
+    {
+      data_filtered2() %>%
+        pull(loan_amount) %>% 
+        describe() %>%
+        as.matrix() %>% 
+        data.frame() %>%
+        rename(Mean = mean, 
+               Median = median, 
+               Min = min, 
+               Max = max, 
+               Range = range, 
+               Skew = skew, 
+               Kurtosis = kurtosis,
+               `Standard Error` = se,
+               `Standard Deviation` = sd
+        ) %>% 
+        select(Mean, 
+               Median, 
+               Min, 
+               Max, 
+               Range, 
+               Skew, 
+               Kurtosis,
+               `Standard Error`,
+               `Standard Deviation`) %>%
+        t() %>%
+        data.frame() %>%
+        rename(., Values = X1) %>%
+        mutate_at(vars(Values), funs(round(., 2))) %>% 
+        mutate_at(vars(Values), separator) %>%
+        mutate(Statistics = rownames(.)) %>% 
+        select(Statistics, Values)
+    })
   
   #5 Loan Applications by Action Taken plots/tables
   output$actionPlot1 <- renderPlot ({
@@ -756,7 +854,8 @@ shinyServer(function(input, output) {
       scale_y_continuous(labels = scales::percent)+
       labs(y = "Percentage", x= "", title = "Percentage of Denial Reasons")+
       theme(plot.title = element_text(hjust = 0.5),
-            text = element_text(size = 20), 
+            text = element_text(size = 20),
+            plot.margin = unit(c(0.3,2,0.3,0.3), "cm"), 
             legend.position = "none")+
       coord_flip()
   })
@@ -773,7 +872,8 @@ shinyServer(function(input, output) {
       scale_y_continuous(labels = scales::percent)+
       labs(y = "Percentage", x= "", title = "Percentage of Denial Reasons")+
       theme(plot.title = element_text(hjust = 0.5),
-            text = element_text(size = 20), 
+            text = element_text(size = 20),
+            plot.margin = unit(c(0.3,2,0.3,0.3), "cm"), 
             legend.position = "none")+
       coord_flip()
   })

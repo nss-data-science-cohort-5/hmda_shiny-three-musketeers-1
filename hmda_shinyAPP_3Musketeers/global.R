@@ -6,6 +6,7 @@ library(scales)
 library(sf)
 library(leaflet)
 library(htmltools)
+library(psych)
 
 hmda_lei_census <- read_csv("data/hmda_lei_census.csv")
 first_map_data <- read_sf("data/wash.shp")
