@@ -447,7 +447,7 @@ shinyServer(function(input, output) {
       mutate(Percentage = round(cnt / sum(cnt),3)) %>% 
       ggplot(aes(x = reorder(Gender, Percentage), y = Percentage, fill = Gender)) +
       geom_col(color = "black") +
-      scale_y_continuous(labels = percent) +
+      scale_y_continuous(labels = label_percent(accuracy = 1)) +
       labs(title = "Applicant Composition by Sex", x="")+
       theme(plot.title = element_text(hjust = 0.5),
             text = element_text(size = 20), 
@@ -463,7 +463,7 @@ shinyServer(function(input, output) {
       mutate(Percentage = round(cnt / sum(cnt),3)) %>% 
       ggplot(aes(x = reorder(Gender, Percentage), y = Percentage, fill = Gender)) +
       geom_col(color = "black") +
-      scale_y_continuous(labels = percent) +
+      scale_y_continuous(labels = label_percent(accuracy = 1)) +
       labs(title = "Applicant Composition by Sex", x="")+
       theme(plot.title = element_text(hjust = 0.5),
             text = element_text(size = 20), 
@@ -473,6 +473,8 @@ shinyServer(function(input, output) {
   
   #Sex Tables
   output$sexTable1<- renderDataTable(
+    caption = tags$caption("Applicant Composition by Sex",
+                           style="color:white;text-align: Center;"),
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', targets = 0:2))),
@@ -491,6 +493,8 @@ shinyServer(function(input, output) {
     })
   #Sex Table 2
   output$sexTable2<- renderDataTable(
+    caption = tags$caption("Applicant Composition by Sex",
+                           style="color:white;text-align: Center;"),
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', targets = 0:2))),
@@ -593,6 +597,8 @@ shinyServer(function(input, output) {
   
   
   output$ageTable1 <- renderDataTable(
+    caption = tags$caption("Applicant and Area Composition by Age",
+                           style="color:white;text-align: Center;"),
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', 
@@ -613,6 +619,8 @@ shinyServer(function(input, output) {
     })
   
   output$ageTable2 <- renderDataTable(
+    caption = tags$caption("Applicant and Area Composition by Age",
+                           style="color:white;text-align: Center;"),
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', 
@@ -644,10 +652,12 @@ shinyServer(function(input, output) {
       scale_x_continuous(name = "Loan Amount", 
                          limits = c(0, 1000000),
                          labels = dollar_format()) +
-      scale_y_continuous(name = "Count", labels = comma) +
+      scale_y_continuous(name = "Count", 
+                         labels = comma) +
       labs(title = "Distribution of Loan Amounts by $50,000 Increments")+
-      theme(plot.title = element_text(hjust = 1),
-            text = element_text(size = 20))
+      theme(plot.title = element_text(hjust = 0.5),
+            text = element_text(size = 20),
+            plot.margin = unit(c(0.3,1.025,0.3,0.3), "cm"))
   })
   #distplot2
   output$distPlot2 <- renderPlot ({
@@ -661,8 +671,9 @@ shinyServer(function(input, output) {
                          labels = dollar_format()) +
       scale_y_continuous(name = "Count", labels = comma) +
       labs(title = "Distribution of Loan Amounts by $50,000 Increments")+
-      theme(plot.title = element_text(hjust = 1),
-            text = element_text(size = 20))
+      theme(plot.title = element_text(hjust = 0.5),
+            text = element_text(size = 20),
+            plot.margin = unit(c(0.3,1.025,0.3,0.3), "cm"))
   })
   
   #5 Loan Applications by Action Taken plots/tables
@@ -699,6 +710,8 @@ shinyServer(function(input, output) {
   })
   #action table 1
   output$actionTable1<- renderDataTable(
+    caption = tags$caption("Composition of Action Taken",
+                           style="color:white;text-align: Center;"),
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', targets = 0:2))),
@@ -714,6 +727,8 @@ shinyServer(function(input, output) {
     })
   #action table 2
   output$actionTable2<- renderDataTable(
+    caption = tags$caption("Composition of Action Taken",
+                           style="color:white;text-align: Center;"),
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', targets = 0:2))),
@@ -740,7 +755,7 @@ shinyServer(function(input, output) {
       geom_col(color = "black") +
       scale_y_continuous(labels = scales::percent)+
       labs(y = "Percentage", x= "", title = "Percentage of Denial Reasons")+
-      theme(plot.title = element_text(hjust = 1),
+      theme(plot.title = element_text(hjust = 0.5),
             text = element_text(size = 20), 
             legend.position = "none")+
       coord_flip()
@@ -757,13 +772,15 @@ shinyServer(function(input, output) {
       geom_col(color = "black") +
       scale_y_continuous(labels = scales::percent)+
       labs(y = "Percentage", x= "", title = "Percentage of Denial Reasons")+
-      theme(plot.title = element_text(hjust = 1),
+      theme(plot.title = element_text(hjust = 0.5),
             text = element_text(size = 20), 
             legend.position = "none")+
       coord_flip()
   })
   
   output$denialTable1<- renderDataTable(
+    caption = tags$caption("Composition of Denial Reasons",
+                           style="color:white;text-align: Center;"),
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', 
@@ -784,6 +801,8 @@ shinyServer(function(input, output) {
     })
   
   output$denialTable2<- renderDataTable(
+    caption = tags$caption("Composition of Denial Reasons",
+                           style="color:white;text-align: Center;"),
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', 
@@ -913,15 +932,22 @@ shinyServer(function(input, output) {
   
   #8 Failed Loan Applications by County 
   output$leafletPlot <- renderLeaflet({
-    leaflet(ll_map_data) %>% 
-      addProviderTiles(providers$Esri.NatGeoWorldMap) %>% 
+    leaflet(ll_map_data) %>%
+      addProviderTiles(providers$Esri.NatGeoWorldMap) %>%
       addPolygons(color = "black",
                   weight = 1,
                   fillOpacity = 0.8,
-                  fillColor = ~colorQuantile("Reds", COAT)(COAT),
+                  fillColor = ~pal(log2(COAT)),
                   highlightOptions = highlightOptions(fillColor = "black",
                                                       bringToFront = TRUE),
-                  label = labels)
+                  label = labels) %>%
+      addLegend("bottomright",
+                pal = pal,
+                values = ~COAT,
+                title = "Failed Applications per 1,000 People",
+                opacity = 1,
+                labFormat = labelFormat(transform = function(x) 2**x,
+                                        digits = 0))
   })
   
   

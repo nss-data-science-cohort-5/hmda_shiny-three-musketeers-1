@@ -102,12 +102,13 @@ filter_map <- function(reactive) {
 # Labels for leaflet plot.
 labels <- paste(
   "<strong>",ll_map_data$Name,"</strong><br/>",
-  "Denials Per 1,000 People: ",ll_map_data$COAT,"<br/>",
+  "Failed Applications Per 1,000 People: ",ll_map_data$COAT,"<br/>",
   "Percentage POC: ",ll_map_data$POC,"%<br/>",
   "Percentage Women: ",ll_map_data$Females,"%<br/>"
 ) %>% lapply(htmltools::HTML)
 
-
-
-
-
+pal <- colorBin(
+  palette = "YlOrRd",
+  domain = log2(ll_map_data$COAT),
+  n = 10
+)
