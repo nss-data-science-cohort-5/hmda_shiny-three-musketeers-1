@@ -922,6 +922,7 @@ shinyServer(function(input, output) {
         rename(., `Denial Reasons` = `denial_reason.1`, Loans = n, Percentage = Percent)
     })
   
+  #7 Distribution of Income to Loan Amount Ratios
   output$ratioPlot1 <- renderPlot({
     data_filtered1() %>% 
       drop_na() %>% 
@@ -962,7 +963,91 @@ shinyServer(function(input, output) {
                  size = 1)
   })
   
+  output$ratioTable1<- renderDataTable(
+    caption = tags$caption("Statistics of Income to Loan Amount Ratio",
+                           style="color:white;text-align: Center;"),
+    rownames = FALSE,
+    options = list(dom = 't',
+                   columnDefs = list(list(className = 'dt-right', targets = 0:1))),
+    
+    {
+      data_filtered1() %>%
+        filter(ratio>=0) %>% 
+        pull(ratio) %>% 
+        describe() %>%
+        as.matrix() %>% 
+        data.frame() %>%
+        rename(Mean = mean, 
+               Median = median, 
+               Min = min, 
+               Max = max, 
+               Range = range, 
+               Skew = skew, 
+               Kurtosis = kurtosis,
+               `Standard Error` = se,
+               `Standard Deviation` = sd
+        ) %>% 
+        select(Mean, 
+               Median, 
+               Min, 
+               Max, 
+               Range, 
+               Skew, 
+               Kurtosis,
+               `Standard Error`,
+               `Standard Deviation`) %>%
+        t() %>%
+        data.frame() %>%
+        rename(., Values = X1) %>%
+        mutate_at(vars(Values), funs(round(., 2))) %>% 
+        mutate_at(vars(Values), separator) %>%
+        mutate(Statistics = rownames(.)) %>% 
+        select(Statistics, Values)
+    })
   
+  output$ratioTable2<- renderDataTable(
+    caption = tags$caption("Statistics of Income to Loan Amount Ratio",
+                           style="color:white;text-align: Center;"),
+    rownames = FALSE,
+    options = list(dom = 't',
+                   columnDefs = list(list(className = 'dt-right', targets = 0:1))),
+    
+    {
+      data_filtered2() %>%
+        filter(ratio>=0) %>% 
+        pull(ratio) %>% 
+        describe() %>%
+        as.matrix() %>% 
+        data.frame() %>%
+        rename(Mean = mean, 
+               Median = median, 
+               Min = min, 
+               Max = max, 
+               Range = range, 
+               Skew = skew, 
+               Kurtosis = kurtosis,
+               `Standard Error` = se,
+               `Standard Deviation` = sd
+        ) %>% 
+        select(Mean, 
+               Median, 
+               Min, 
+               Max, 
+               Range, 
+               Skew, 
+               Kurtosis,
+               `Standard Error`,
+               `Standard Deviation`) %>%
+        t() %>%
+        data.frame() %>%
+        rename(., Values = X1) %>%
+        mutate_at(vars(Values), funs(round(., 2))) %>% 
+        mutate_at(vars(Values), separator) %>%
+        mutate(Statistics = rownames(.)) %>% 
+        select(Statistics, Values)
+    })
+  
+  #8 Loan Applications Map by County
   output$mapPlot1 <- renderPlot({
     filter_map(map_data_filtered1()) %>% 
       fill(Aggregate_Number, 0) %>% 
@@ -1070,7 +1155,7 @@ shinyServer(function(input, output) {
   })
   
   
-  #8 Failed Loan Applications by County 
+  #9 Failed Loan Applications by County 
   output$leafletPlot <- renderLeaflet({
     leaflet(ll_map_data) %>%
       addProviderTiles(providers$Esri.NatGeoWorldMap) %>%
