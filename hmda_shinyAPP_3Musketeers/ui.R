@@ -200,11 +200,18 @@ shinyUI(fluidPage(
   h3("Distribution of Loan Amounts", align = "center"),
   fluidRow(
     column(6,
-           plotOutput("distPlot1")
+
+           tabsetPanel(
+             tabPanel("Plot", plotOutput("distPlot1")),
+             tabPanel("Table", dataTableOutput("distTable1"))
+           )
     ),
     
     column(6,
-           plotOutput("distPlot2")
+           tabsetPanel(
+             tabPanel("Plot", plotOutput("distPlot2")),
+             tabPanel("Table", dataTableOutput("distTable2"))
+           )
     )
   ),
   
