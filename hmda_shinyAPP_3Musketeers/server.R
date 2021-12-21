@@ -235,9 +235,6 @@ shinyServer(function(input, output) {
       mutate(pct = prop.table(n)) %>%
       ggplot(aes(x = reorder(derived_race, pct), y = pct, fill = derived_race, label = scales::percent(pct))) +
       geom_col(color = "black") +
-      # geom_text(position = position_dodge(width = .9),    # move to center of bars
-      #           vjust = -0.5,    # nudge above top of bar
-      #           size = 5) +
       scale_y_continuous(labels = scales::percent)+
       labs(y = "Percentage", x= "", title = "Applicant Racial Composition")+
       theme(plot.title = element_text(hjust = 0.5),
@@ -252,9 +249,6 @@ shinyServer(function(input, output) {
       mutate(pct = prop.table(n)) %>%
       ggplot(aes(x = reorder(derived_race, pct), y = pct, fill = derived_race, label = scales::percent(pct))) +
       geom_col(color = "black") +
-      # geom_text(position = position_dodge(width = .9),    # move to center of bars
-      #           vjust = -0.5,    # nudge above top of bar
-      #           size = 5) +
       scale_y_continuous(labels = scales::percent)+
       labs(y = "Percentage", x= "", title = "Applicant Racial Composition")+
       theme(plot.title = element_text(hjust = 0.5),
@@ -330,6 +324,8 @@ shinyServer(function(input, output) {
   
   #1 Tables of loans by race
   output$raceTable1<- renderDataTable(
+    caption = tags$caption("Applicant Racial Composition",
+                           style="color:white;text-align: Center;"),
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', 
@@ -339,14 +335,16 @@ shinyServer(function(input, output) {
         count(derived_race) %>%
         mutate(Percent = n/sum(n))%>%
         data.frame() %>%
-        mutate_at(vars(Percent), funs(round(.,2))) %>%
-        mutate(Percent = sapply(.[["Percent"]], label_percent())) %>% 
+        mutate_at(vars(Percent), funs(round(.,4))) %>%
         mutate_at(vars(n), separator) %>%
         arrange(desc(Percent)) %>%
-        rename(., `Derived Race` = derived_race, Loans = n)
+        mutate(Percent = sapply(.[["Percent"]], label_percent(accuracy = 0.01))) %>%
+        rename(`Derived Race` = derived_race, Loans = n, Percentage = Percent)
     })
   
   output$raceTable2<- renderDataTable(
+    caption = tags$caption("Applicant Racial Composition",
+                           style="color:white;text-align: Center;"),
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', 
@@ -356,14 +354,16 @@ shinyServer(function(input, output) {
         count(derived_race) %>%
         mutate(Percent = n/sum(n))%>%
         data.frame() %>%
-        mutate_at(vars(Percent), funs(round(.,2))) %>%
-        mutate(Percent = sapply(.[["Percent"]], label_percent())) %>%
+        mutate_at(vars(Percent), funs(round(.,4))) %>%
         mutate_at(vars(n), separator) %>%
         arrange(desc(Percent)) %>%
-        rename(., `Derived Race` = derived_race, Loans = n)
+        mutate(Percent = sapply(.[["Percent"]], label_percent(accuracy = 0.01))) %>%
+        rename(`Derived Race` = derived_race, Loans = n, Percentage = Percent)
     })
   
   output$raceCensusTable1<- renderDataTable(
+    caption = tags$caption("Area Racial Composition",
+                           style="color:white;text-align: Center;"),
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', 
@@ -391,15 +391,17 @@ shinyServer(function(input, output) {
         mutate(total = rowSums(across(where(is.numeric)))) %>%
         mutate(pct = total/sum(total)) %>%
         mutate(race = race) %>%
-        mutate_at(vars(pct), funs(round(.,2))) %>%
-        mutate(pct = sapply(.[["pct"]], label_percent())) %>%
+        mutate_at(vars(pct), funs(round(.,4))) %>%
         mutate_at(vars(total), separator) %>%
         arrange(desc(pct)) %>%
-        rename(., Population = total, Percent = pct, Race = race) %>% 
-        select(Race, Population, Percent)
+        mutate_at(vars(pct), funs(sapply(., label_percent(accuracy = 0.01)))) %>% 
+        rename(Population = total, Percentage = pct, Race = race) %>% 
+        select(Race, Population, Percentage)
     })
   
   output$raceCensusTable2<- renderDataTable(
+    caption = tags$caption("Area Racial Composition",
+                           style="color:white;text-align: Center;"),
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', 
@@ -427,12 +429,12 @@ shinyServer(function(input, output) {
         mutate(total = rowSums(across(where(is.numeric)))) %>%
         mutate(pct = total/sum(total)) %>%
         mutate(race = race) %>%
-        mutate_at(vars(pct), funs(round(.,2))) %>%
-        mutate(pct = sapply(.[["pct"]], label_percent())) %>%
+        mutate_at(vars(pct), funs(round(.,4))) %>%
         mutate_at(vars(total), separator) %>%
         arrange(desc(pct)) %>%
-        rename(., Population = total, Percent = pct, Race = race) %>% 
-        select(Race, Population, Percent)
+        mutate_at(vars(pct), funs(sapply(., label_percent(accuracy = 0.01)))) %>% 
+        rename(Population = total, Percentage = pct, Race = race) %>% 
+        select(Race, Population, Percentage)
     })
   
   #2 Sex and sex census plots/tables
@@ -442,11 +444,15 @@ shinyServer(function(input, output) {
       mutate(Gender = derived_sex) %>% 
       group_by(Gender) %>% 
       summarise(cnt = n()) %>% 
-      mutate(Frequency = round(cnt / sum(cnt),3)) %>% 
-      ggplot(aes(x = Gender, y = Frequency, fill = Gender)) +
+      mutate(Percentage = round(cnt / sum(cnt),3)) %>% 
+      ggplot(aes(x = reorder(Gender, Percentage), y = Percentage, fill = Gender)) +
       geom_col(color = "black") +
       scale_y_continuous(labels = percent) +
-      labs(title = "Loan Application Frequency by Sex")
+      labs(title = "Applicant Composition by Sex", x="")+
+      theme(plot.title = element_text(hjust = 0.5),
+            text = element_text(size = 20), 
+            legend.position = "none")+
+      coord_flip()
   })
   #Sex plot 2
   output$sexPlot2 <- renderPlot ({
@@ -454,11 +460,15 @@ shinyServer(function(input, output) {
       mutate(Gender = derived_sex) %>% 
       group_by(Gender) %>% 
       summarise(cnt = n()) %>% 
-      mutate(Frequency = round(cnt / sum(cnt),3)) %>% 
-      ggplot(aes(x = Gender, y = Frequency, fill = Gender)) +
+      mutate(Percentage = round(cnt / sum(cnt),3)) %>% 
+      ggplot(aes(x = reorder(Gender, Percentage), y = Percentage, fill = Gender)) +
       geom_col(color = "black") +
       scale_y_continuous(labels = percent) +
-      labs(title = "Loan Application Frequency by Sex")
+      labs(title = "Applicant Composition by Sex", x="")+
+      theme(plot.title = element_text(hjust = 0.5),
+            text = element_text(size = 20), 
+            legend.position = "none")+
+      coord_flip()
   })
   
   #Sex Tables
@@ -471,12 +481,13 @@ shinyServer(function(input, output) {
         mutate(Gender = derived_sex) %>% 
         group_by(Gender) %>% 
         summarise(Count = n()) %>% 
-        mutate(Frequency = Count / sum(Count)) %>% 
+        mutate(Frequency = round(Count / sum(Count), 4)) %>% 
         mutate(Loans = Count) %>% 
-        mutate(Frequency = sapply(.[["Frequency"]], label_percent()),
-               Loans = prettyNum(.[["Loans"]], big.mark = ",")) %>% 
         select(Gender, Loans, Frequency) %>% 
-        arrange(desc(Frequency))
+        arrange(desc(Frequency)) %>% 
+        mutate(Frequency = sapply(.[["Frequency"]], label_percent(accuracy = 0.01)),
+               Loans = prettyNum(.[["Loans"]], big.mark = ",")) %>% 
+        rename(Percentage = Frequency, Sex = Gender)
     })
   #Sex Table 2
   output$sexTable2<- renderDataTable(
@@ -488,12 +499,13 @@ shinyServer(function(input, output) {
         mutate(Gender = derived_sex) %>% 
         group_by(Gender) %>% 
         summarise(Count = n()) %>% 
-        mutate(Frequency = Count / sum(Count)) %>% 
+        mutate(Frequency = round(Count / sum(Count), 4)) %>% 
         mutate(Loans = Count) %>% 
-        mutate(Frequency = sapply(.[["Frequency"]], label_percent()),
-               Loans = prettyNum(.[["Loans"]], big.mark = ",")) %>%
         select(Gender, Loans, Frequency) %>% 
-        arrange(desc(Frequency))
+        arrange(desc(Frequency)) %>% 
+        mutate(Frequency = sapply(.[["Frequency"]], label_percent(accuracy = 0.01)),
+               Loans = prettyNum(.[["Loans"]], big.mark = ",")) %>% 
+        rename(Percentage = Frequency, Sex = Gender)
     })
   
   #3 Age plots/tables
@@ -513,9 +525,13 @@ shinyServer(function(input, output) {
                 size = 3) +
       scale_y_continuous(labels = percent) +
       labs(x = "Applicant Age Group",
-           y = "Percentage of Applicants",
-           title = "Applicant Age Group Percentage")
+           y = "Percentage",
+           title = "Applicant Age Group Percentage")+
+      theme(plot.title = element_text(hjust = 0.5),
+            text = element_text(size = 20), 
+            legend.position = "bottom")
   })
+  
   output$agePlot1_2 <- renderPlot({
     filter_age(data_filtered1()) %>% 
       fill(Value, 0) %>% 
@@ -527,8 +543,11 @@ shinyServer(function(input, output) {
                color = "black") +
       scale_y_continuous(labels = comma) +
       labs(x = "Applicant Age Group",
-           y = "Number of Applicants",
-           title = "Applicant Age Group Totals")
+           y = "Counts",
+           title = "Applicant Age Group Totals")+
+      theme(plot.title = element_text(hjust = 0.5),
+            text = element_text(size = 20), 
+            legend.position = "bottom")
   })
   
   
@@ -547,8 +566,11 @@ shinyServer(function(input, output) {
                 size = 3) +
       scale_y_continuous(labels = percent) +
       labs(x = "Applicant Age Group",
-           y = "Percentage of Applicants",
-           title = "Applicant Age Group Percentage")
+           y = "Percentage",
+           title = "Applicant Age Group Percentage")+
+      theme(plot.title = element_text(hjust = 0.5),
+            text = element_text(size = 20), 
+            legend.position = "bottom")
   })
   
   output$agePlot2_2 <- renderPlot({
@@ -562,8 +584,11 @@ shinyServer(function(input, output) {
                color = "black") +
       scale_y_continuous(labels = comma) +
       labs(x = "Applicant Age Group",
-           y = "Number of Applicants",
-           title = "Applicant Age Group Totals")
+           y = "Counts",
+           title = "Applicant Age Group Totals")+
+      theme(plot.title = element_text(hjust = 0.5),
+            text = element_text(size = 20), 
+            legend.position = "bottom")
   })
   
   
@@ -577,9 +602,9 @@ shinyServer(function(input, output) {
         fill(0) %>% 
         pivot_wider(names_from = "Category", values_from = "Value") %>% 
         mutate("Applicant Percentage" = sapply(.[["Applicant Percentage"]],
-                                               label_percent()),
+                                               label_percent(accuracy = 0.01)),
                "Area Percentage" = sapply(.[["Area Percentage"]],
-                                          label_percent())) %>%
+                                          label_percent(accuracy = 0.01))) %>%
         rename("Applicant Age Group" = "Group") %>% 
         mutate("Area Total" = prettyNum(.[["Area Total"]], big.mark = ","),
                "Applicant Total" = prettyNum(.[["Applicant Total"]], big.mark = ",")) %>% 
@@ -597,9 +622,9 @@ shinyServer(function(input, output) {
         fill(0) %>% 
         pivot_wider(names_from = "Category", values_from = "Value") %>% 
         mutate("Applicant Percentage" = sapply(.[["Applicant Percentage"]],
-                                               label_percent()),
+                                               label_percent(accuracy = 0.01)),
                "Area Percentage" = sapply(.[["Area Percentage"]],
-                                          label_percent())) %>%
+                                          label_percent(accuracy = 0.01))) %>%
         rename("Applicant Age Group" = "Group") %>% 
         mutate("Area Total" = prettyNum(.[["Area Total"]], big.mark = ","),
                "Applicant Total" = prettyNum(.[["Applicant Total"]], big.mark = ",")) %>% 
@@ -611,6 +636,7 @@ shinyServer(function(input, output) {
   
   #distplot1
   output$distPlot1 <- renderPlot ({
+    
     ggplot(data_filtered1(), aes(x = loan_amount)) +
       geom_histogram(breaks = seq(0,1000000, 50000),
                      fill = "blue",
@@ -619,11 +645,13 @@ shinyServer(function(input, output) {
                          limits = c(0, 1000000),
                          labels = dollar_format()) +
       scale_y_continuous(name = "Count", labels = comma) +
-      labs(title = "Distribution of Loan Amounts by $50,000 Increments")
+      labs(title = "Distribution of Loan Amounts by $50,000 Increments")+
+      theme(plot.title = element_text(hjust = 1),
+            text = element_text(size = 20))
   })
   #distplot2
   output$distPlot2 <- renderPlot ({
-    ggplot(data_filtered1(), 
+    ggplot(data_filtered2(), 
            aes(x = loan_amount)) +
       geom_histogram(breaks = seq(0,1000000, 50000),
                      fill = "blue",
@@ -632,8 +660,73 @@ shinyServer(function(input, output) {
                          limits = c(0, 1000000),
                          labels = dollar_format()) +
       scale_y_continuous(name = "Count", labels = comma) +
-      labs(title = "Distribution of Loan Amounts by $50,000 Increments")
+      labs(title = "Distribution of Loan Amounts by $50,000 Increments")+
+      theme(plot.title = element_text(hjust = 1),
+            text = element_text(size = 20))
   })
+  
+  #5 Loan Applications by Action Taken plots/tables
+  output$actionPlot1 <- renderPlot ({
+    data_filtered1() %>% 
+      group_by(action_taken) %>% 
+      summarise(cnt = n()) %>% 
+      mutate(Percentage = round(cnt / sum(cnt), 3)) %>% 
+      ggplot(aes(x = reorder(action_taken, Percentage), y = Percentage, fill = action_taken)) +
+      geom_col(color = "black") +
+      scale_fill_discrete(name = "Action Taken") +
+      scale_y_continuous(label = percent) + 
+      labs(title = "Percentage of Actions Taken for Loan Applications", x= "")+
+      theme(plot.title = element_text(hjust = 1),
+            text = element_text(size = 20), 
+            legend.position = "none")+
+      coord_flip()
+  })
+  #Action plot 2
+  output$actionPlot2 <- renderPlot ({
+    data_filtered2() %>% 
+      group_by(action_taken) %>% 
+      summarise(cnt = n()) %>% 
+      mutate(Percentage = round(cnt / sum(cnt), 3)) %>% 
+      ggplot(aes(x = reorder(action_taken, Percentage), y = Percentage, fill = action_taken)) +
+      geom_col(color = "black") +
+      scale_fill_discrete(name = "Action Taken") +
+      scale_y_continuous(label = percent) + 
+      labs(title = "Percentage of Actions Taken for Loan Applications", x= "")+
+      theme(plot.title = element_text(hjust = 1),
+            text = element_text(size = 20), 
+            legend.position = "none")+
+      coord_flip()
+  })
+  #action table 1
+  output$actionTable1<- renderDataTable(
+    rownames = FALSE,
+    options = list(dom = 't',
+                   columnDefs = list(list(className = 'dt-right', targets = 0:2))),
+    {
+      data_filtered1() %>% 
+        group_by(action_taken) %>% 
+        summarise(Count = n()) %>% 
+        mutate(Percentage = round(Count / sum(Count), 4)) %>% 
+        rename("Action Taken" = "action_taken") %>% 
+        arrange(desc(Percentage)) %>% 
+        mutate(Percentage = sapply(.[["Percentage"]], label_percent(accuracy = 0.01)),
+               Count = prettyNum(.[["Count"]], big.mark = ","))
+    })
+  #action table 2
+  output$actionTable2<- renderDataTable(
+    rownames = FALSE,
+    options = list(dom = 't',
+                   columnDefs = list(list(className = 'dt-right', targets = 0:2))),
+    {
+      data_filtered2() %>% 
+        group_by(action_taken) %>% 
+        summarise(Count = n()) %>% 
+        mutate(Percentage = round(Count / sum(Count), 4)) %>% 
+        rename("Action Taken" = "action_taken") %>% 
+        arrange(desc(Percentage)) %>% 
+        mutate(Percentage = sapply(.[["Percentage"]], label_percent(accuracy = 0.01)),
+               Count = prettyNum(.[["Count"]], big.mark = ","))
+    })
   
   #6 Denial Reasons of Loan Applications plots/tables
   output$denialPlot1 <- renderPlot({
@@ -645,12 +738,9 @@ shinyServer(function(input, output) {
       mutate(pct = prop.table(n)) %>%
       ggplot(aes(x = reorder(`denial_reason-1`, pct), y = pct, fill = `denial_reason-1`, label = scales::percent(pct))) +
       geom_col(color = "black") +
-      # geom_text(position = position_dodge(width = .9),    # move to center of bars
-      #           vjust = -0.5,    # nudge above top of bar
-      #           size = 5) +
       scale_y_continuous(labels = scales::percent)+
-      labs(y = "Frequency", x= "", title = "Frequency of Denial Reasons")+
-      theme(plot.title = element_text(hjust = 0.5),
+      labs(y = "Percentage", x= "", title = "Percentage of Denial Reasons")+
+      theme(plot.title = element_text(hjust = 1),
             text = element_text(size = 20), 
             legend.position = "none")+
       coord_flip()
@@ -665,12 +755,9 @@ shinyServer(function(input, output) {
       mutate(pct = prop.table(n)) %>%
       ggplot(aes(x = reorder(`denial_reason-1`, pct), y = pct, fill = `denial_reason-1`, label = scales::percent(pct))) +
       geom_col(color = "black") +
-      # geom_text(position = position_dodge(width = .9),    # move to center of bars
-      #           vjust = -0.5,    # nudge above top of bar
-      #           size = 5) +
       scale_y_continuous(labels = scales::percent)+
-      labs(y = "Frequency", x= "", title = "Frequency of Denial Reasons")+
-      theme(plot.title = element_text(hjust = 0.5),
+      labs(y = "Percentage", x= "", title = "Percentage of Denial Reasons")+
+      theme(plot.title = element_text(hjust = 1),
             text = element_text(size = 20), 
             legend.position = "none")+
       coord_flip()
@@ -689,11 +776,11 @@ shinyServer(function(input, output) {
         count(`denial_reason-1`) %>%
         mutate(Percent = n/sum(n))%>%
         data.frame() %>%
-        mutate_at(vars(Percent), funs(round(.,2))) %>%
-        mutate(Percent = sapply(.[["Percent"]], label_percent())) %>% 
+        mutate_at(vars(Percent), funs(round(.,4))) %>%
         mutate_at(vars(n), separator) %>%
         arrange(desc(Percent)) %>%
-        rename(., `Denial Reasons` = `denial_reason.1`, Loans = n)
+        mutate(Percent = sapply(.[["Percent"]], label_percent(accuracy = 0.01))) %>%
+        rename(., `Denial Reasons` = `denial_reason.1`, Loans = n, Percentage = Percent)
     })
   
   output$denialTable2<- renderDataTable(
@@ -709,73 +796,14 @@ shinyServer(function(input, output) {
         count(`denial_reason-1`) %>%
         mutate(Percent = n/sum(n))%>%
         data.frame() %>%
-        mutate_at(vars(Percent), funs(round(.,2))) %>%
-        mutate(Percent = sapply(.[["Percent"]], label_percent())) %>% 
+        mutate_at(vars(Percent), funs(round(.,4))) %>%
         mutate_at(vars(n), separator) %>%
         arrange(desc(Percent)) %>%
-        rename(., `Denial Reasons` = `denial_reason.1`, Loans = n)
+        mutate(Percent = sapply(.[["Percent"]], label_percent(accuracy = 0.01))) %>%
+        rename(., `Denial Reasons` = `denial_reason.1`, Loans = n, Percentage = Percent)
     })
   
-  
-  #7 Loan Applications by Action Taken plots/tables
-  output$actionPlot1 <- renderPlot ({
-    data_filtered1() %>% 
-      group_by(action_taken) %>% 
-      summarise(cnt = n()) %>% 
-      mutate(Frequency = round(cnt / sum(cnt), 3)) %>% 
-      ggplot(aes(x = action_taken, y = Frequency, fill = action_taken)) +
-      geom_col(color = "black") +
-      theme(axis.text.x = element_blank(),
-            axis.ticks.x = element_blank()) +
-      xlab("Action Taken") +
-      scale_fill_discrete(name = "Action Taken") +
-      scale_y_continuous(label = percent) + 
-      labs(title = "Frequency of Actions Taken for Loan Applications")
-  })
-  #Action plot 2
-  output$actionPlot2 <- renderPlot ({
-    data_filtered2() %>% 
-      group_by(action_taken) %>% 
-      summarise(cnt = n()) %>% 
-      mutate(Frequency = round(cnt / sum(cnt), 3)) %>% 
-      ggplot(aes(x = action_taken, y = Frequency, fill = action_taken)) +
-      geom_col(color = "black") +
-      theme(axis.text.x = element_blank(),
-            axis.ticks.x = element_blank()) +
-      xlab("Action Taken") +
-      scale_fill_discrete(name = "Action Taken") +
-      scale_y_continuous(label = percent) + 
-      labs(title = "Frequency of Actions Taken for Loan Applications")
-  })
-  #action table 1
-  output$actionTable1<- renderDataTable(
-    rownames = FALSE,
-    options = list(dom = 't',
-                   columnDefs = list(list(className = 'dt-right', targets = 0:2))),
-    {
-      data_filtered2() %>% 
-        group_by(action_taken) %>% 
-        summarise(Count = n()) %>% 
-        mutate(Frequency = round(Count / sum(Count), 3)) %>% 
-        rename("Action Taken" = "action_taken") %>% 
-        mutate(Frequency = sapply(.[["Frequency"]], label_percent()),
-               Count = prettyNum(.[["Count"]], big.mark = ","))
-    })
-  #action table 2
-  output$actionTable2<- renderDataTable(
-    rownames = FALSE,
-    options = list(dom = 't',
-                   columnDefs = list(list(className = 'dt-right', targets = 0:2))),
-    {
-      data_filtered2() %>% 
-        group_by(action_taken) %>% 
-        summarise(Count = n()) %>% 
-        mutate(Frequency = round(Count / sum(Count), 3)) %>% 
-        rename("Action Taken" = "action_taken") %>% 
-        mutate(Frequency = sapply(.[["Frequency"]], label_percent()),
-               Count = prettyNum(.[["Count"]], big.mark = ","))
-    })
-  #8 Loan Applications by County map/tables
+  #7 Loan Applications by County map/tables
   output$mapPlot1 <- renderPlot({
     filter_map(map_data_filtered1()) %>% 
       fill(Aggregate_Number, 0) %>% 
@@ -831,7 +859,7 @@ shinyServer(function(input, output) {
   })
   
   output$mapPctPlot1 <- renderPlot({
-    filter_map(map_data_filtered2()) %>% 
+    filter_map(map_data_filtered1()) %>% 
       fill(Pct_Aggregate_Number, 0) %>% 
       ggplot() + 
       geom_sf(aes(fill = Pct_Aggregate_Number),
@@ -882,6 +910,8 @@ shinyServer(function(input, output) {
                           high = "#A0522D")
   })
   
+  
+  #8 Failed Loan Applications by County 
   output$leafletPlot <- renderLeaflet({
     leaflet(ll_map_data) %>% 
       addProviderTiles(providers$Esri.NatGeoWorldMap) %>% 
