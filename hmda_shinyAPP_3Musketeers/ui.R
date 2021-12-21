@@ -1,5 +1,4 @@
 # HMDA shiny app
-
 # Define UI for application
 shinyUI(fluidPage(
   
@@ -42,7 +41,7 @@ shinyUI(fluidPage(
   fluidRow(
     column(width = 3,
            selectInput(inputId = "lei1",
-                       label = "Choose the 1st LEI(s):",
+                       label = "Choose the 1st Lender(s):",
                        multiple = TRUE,
                        selected = "All",
                        choices = c("All", hmda_lei_census %>%
@@ -53,7 +52,7 @@ shinyUI(fluidPage(
     
     column(width = 3,
            selectInput(inputId = "county1",
-                       label = "County of the 1st LEI(s):",
+                       label = "County of the 1st Lender(s):",
                        multiple = TRUE,
                        selected = "All",
                        choices = c("All", hmda_lei_census %>%
@@ -64,7 +63,7 @@ shinyUI(fluidPage(
     
     column(width = 3,
            selectInput(inputId = "lei2",
-                       label = "Choose the 2nd LEI(s):",
+                       label = "Choose the 2nd Lender(s):",
                        multiple = TRUE,
                        selected = "All",
                        choices = c("All", hmda_lei_census %>%
@@ -75,7 +74,7 @@ shinyUI(fluidPage(
     
     column(3,
            selectInput(inputId = "county2",
-                       label = "County of the 2nd LEI(s):",
+                       label = "County of the 2nd Lender(s):",
                        multiple = TRUE,
                        selected = "All",
                        choices = c("All", hmda_lei_census %>%

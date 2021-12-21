@@ -107,7 +107,8 @@ labels <- paste(
   "Percentage Women: ",ll_map_data$Females,"%<br/>"
 ) %>% lapply(htmltools::HTML)
 
-
-
-
-
+pal <- colorBin(
+  palette = "YlOrRd",
+  domain = log2(ll_map_data$COAT),
+  n = 10
+)
