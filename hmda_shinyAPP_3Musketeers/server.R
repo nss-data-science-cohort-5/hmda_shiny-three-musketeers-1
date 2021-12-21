@@ -922,7 +922,47 @@ shinyServer(function(input, output) {
         rename(., `Denial Reasons` = `denial_reason.1`, Loans = n, Percentage = Percent)
     })
   
-  #7 Loan Applications by County map/tables
+  output$ratioPlot1 <- renderPlot({
+    data_filtered1() %>% 
+      drop_na() %>% 
+      na.omit(ratio) %>% 
+      ggplot(aes(x = ratio)) +
+      geom_histogram(bins = 40, color = "black", fill = "red") + 
+      xlim(0, 2.5) + 
+      scale_y_continuous(labels = scales::comma) +
+      labs(x = "Income to Loan Amount Ratio",
+           y = "Count",
+           title = "Distribution of Income to Loan Amount Ratios") +
+      theme(text = element_text(size = 20),
+            plot.title = element_text(hjust = 0.5),
+            legend.position = "None") +
+      geom_vline(aes(xintercept = median(ratio)),
+                 color = "black",
+                 linetype = "dashed",
+                 size = 1)
+  })
+  
+  output$ratioPlot2 <- renderPlot({
+    data_filtered2() %>% 
+      drop_na() %>% 
+      na.omit(ratio) %>%
+      ggplot(aes(x = ratio)) +
+      geom_histogram(bins = 40, color = "black", fill = "red") + 
+      xlim(0, 2.5) + 
+      scale_y_continuous(labels = scales::comma) +
+      labs(x = "Income to Loan Amount Ratio",
+           y = "Count",
+           title = "Distribution of Income to Loan Amount Ratios") +
+      theme(text = element_text(size = 20),
+            plot.title = element_text(hjust = 0.5),
+            legend.position = "None") +
+      geom_vline(aes(xintercept = median(ratio)),
+                 color = "black",
+                 linetype = "dashed",
+                 size = 1)
+  })
+  
+  
   output$mapPlot1 <- renderPlot({
     filter_map(map_data_filtered1()) %>% 
       fill(Aggregate_Number, 0) %>% 

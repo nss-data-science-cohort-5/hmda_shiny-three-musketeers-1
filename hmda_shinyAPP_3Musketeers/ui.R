@@ -200,6 +200,7 @@ shinyUI(fluidPage(
   h3("Distribution of Loan Amounts", align = "center"),
   fluidRow(
     column(6,
+
            tabsetPanel(
              tabPanel("Plot", plotOutput("distPlot1")),
              tabPanel("Table", dataTableOutput("distTable1"))
@@ -250,7 +251,20 @@ shinyUI(fluidPage(
     )
   ),
   
-  #7 Loan Applications Map by County
+  #7 Distribution of Income to Loan Amount Ratios
+  h3("Income to Loan Amount Ratios", align = "center"),
+  fluidRow(
+    column(6,
+           plotOutput("ratioPlot1")
+    ),
+    
+    column(6,
+           plotOutput("ratioPlot2")
+    )
+  ),
+  
+  
+  #8 Loan Applications Map by County
   h3("Loan Applications by County", align = "center"),
   fluidRow(
     column(6,
@@ -267,7 +281,7 @@ shinyUI(fluidPage(
     )
   ),
   
-  #8 Failed Loan Applications by County 
+  #9 Failed Loan Applications by County 
   h3("Failed Loan Applications by County", align = "center"),
   fluidRow(
     leafletOutput("leafletPlot", height = 600)
