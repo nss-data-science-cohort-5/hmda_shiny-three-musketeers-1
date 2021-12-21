@@ -473,6 +473,8 @@ shinyServer(function(input, output) {
   
   #Sex Tables
   output$sexTable1<- renderDataTable(
+    caption = tags$caption("Applicant Composition by Sex",
+                           style="color:white;text-align: Center;"),
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', targets = 0:2))),
@@ -491,6 +493,8 @@ shinyServer(function(input, output) {
     })
   #Sex Table 2
   output$sexTable2<- renderDataTable(
+    caption = tags$caption("Applicant Composition by Sex",
+                           style="color:white;text-align: Center;"),
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', targets = 0:2))),
@@ -593,6 +597,8 @@ shinyServer(function(input, output) {
   
   
   output$ageTable1 <- renderDataTable(
+    caption = tags$caption("Applicant and Area Composition by Age",
+                           style="color:white;text-align: Center;"),
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', 
@@ -613,6 +619,8 @@ shinyServer(function(input, output) {
     })
   
   output$ageTable2 <- renderDataTable(
+    caption = tags$caption("Applicant and Area Composition by Age",
+                           style="color:white;text-align: Center;"),
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', 
@@ -702,6 +710,8 @@ shinyServer(function(input, output) {
   })
   #action table 1
   output$actionTable1<- renderDataTable(
+    caption = tags$caption("Composition of Action Taken",
+                           style="color:white;text-align: Center;"),
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', targets = 0:2))),
@@ -717,6 +727,8 @@ shinyServer(function(input, output) {
     })
   #action table 2
   output$actionTable2<- renderDataTable(
+    caption = tags$caption("Composition of Action Taken",
+                           style="color:white;text-align: Center;"),
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', targets = 0:2))),
@@ -743,7 +755,7 @@ shinyServer(function(input, output) {
       geom_col(color = "black") +
       scale_y_continuous(labels = scales::percent)+
       labs(y = "Percentage", x= "", title = "Percentage of Denial Reasons")+
-      theme(plot.title = element_text(hjust = 1),
+      theme(plot.title = element_text(hjust = 0.5),
             text = element_text(size = 20), 
             legend.position = "none")+
       coord_flip()
@@ -760,13 +772,15 @@ shinyServer(function(input, output) {
       geom_col(color = "black") +
       scale_y_continuous(labels = scales::percent)+
       labs(y = "Percentage", x= "", title = "Percentage of Denial Reasons")+
-      theme(plot.title = element_text(hjust = 1),
+      theme(plot.title = element_text(hjust = 0.5),
             text = element_text(size = 20), 
             legend.position = "none")+
       coord_flip()
   })
   
   output$denialTable1<- renderDataTable(
+    caption = tags$caption("Composition of Denial Reasons",
+                           style="color:white;text-align: Center;"),
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', 
@@ -787,6 +801,8 @@ shinyServer(function(input, output) {
     })
   
   output$denialTable2<- renderDataTable(
+    caption = tags$caption("Composition of Denial Reasons",
+                           style="color:white;text-align: Center;"),
     rownames = FALSE,
     options = list(dom = 't',
                    columnDefs = list(list(className = 'dt-right', 
@@ -928,7 +944,7 @@ shinyServer(function(input, output) {
       addLegend("bottomright",
                 pal = pal,
                 values = ~COAT,
-                title = "Failed Applications",
+                title = "Failed Applications per 1,000 People",
                 opacity = 1,
                 labFormat = labelFormat(transform = function(x) 2**x,
                                         digits = 0))

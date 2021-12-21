@@ -2,7 +2,7 @@
 # Define UI for application
 shinyUI(fluidPage(
   
-  theme = shinytheme("darkly"),
+  theme = shinytheme("cyborg"),
 
   # Application title
   titlePanel(title = "", windowTitle = "Fair Lending Analysis"),  
@@ -41,7 +41,7 @@ shinyUI(fluidPage(
   fluidRow(
     column(width = 3,
            selectInput(inputId = "lei1",
-                       label = "Choose the 1st Lender(s):",
+                       label = HTML("<p><span style='color: white'>Choose the 1st Lender(s):</span></p>"),
                        multiple = TRUE,
                        selected = "All",
                        choices = c("All", hmda_lei_census %>%
@@ -52,7 +52,7 @@ shinyUI(fluidPage(
     
     column(width = 3,
            selectInput(inputId = "county1",
-                       label = "County of the 1st Lender(s):",
+                       label = HTML("<p><span style='color: white'>County of the 1st Lender(s):</span></p>"),
                        multiple = TRUE,
                        selected = "All",
                        choices = c("All", hmda_lei_census %>%
@@ -63,7 +63,7 @@ shinyUI(fluidPage(
     
     column(width = 3,
            selectInput(inputId = "lei2",
-                       label = "Choose the 2nd Lender(s):",
+                       label = HTML("<p><span style='color: white'>Choose the 2nd Lender(s):</span></p>"),
                        multiple = TRUE,
                        selected = "All",
                        choices = c("All", hmda_lei_census %>%
@@ -74,7 +74,7 @@ shinyUI(fluidPage(
     
     column(3,
            selectInput(inputId = "county2",
-                       label = "County of the 2nd Lender(s):",
+                       label = HTML("<p><span style='color: white'>County of the 2nd Lender(s):</span></p>"),
                        multiple = TRUE,
                        selected = "All",
                        choices = c("All", hmda_lei_census %>%
@@ -89,7 +89,7 @@ shinyUI(fluidPage(
   fluidRow(
     column(3,
            selectInput(inputId = "loan_type",
-                       label = "Loan Type:",
+                       label = HTML("<p><span style='color: white'>Loan Type:</span></p>"),
                        multiple = TRUE,
                        selected = "All",
                        choices = c("All", hmda_lei_census %>%
@@ -100,7 +100,7 @@ shinyUI(fluidPage(
     
     column(3,
            selectInput(inputId = "purchaser_type",
-                       label = "Purchaser Type:",
+                       label = HTML("<p><span style='color: white'>Purchaser Type:</span></p>"),
                        multiple = TRUE,
                        selected = "All",
                        choices = c("All", hmda_lei_census %>%
@@ -111,7 +111,7 @@ shinyUI(fluidPage(
     
     column(3,
            selectInput(inputId = "derived_dwelling_category",
-                       label = "Dwelling Category:",
+                       label = HTML("<p><span style='color: white'>Dwelling Category:</span></p>"),
                        multiple = TRUE,
                        selected = "All",
                        choices = c("All", hmda_lei_census %>%
@@ -122,7 +122,7 @@ shinyUI(fluidPage(
     
     column(3,
            selectInput(inputId = "activity_year",
-                       label = "Year:",
+                       label = HTML("<p><span style='color: white'>Year:</span></p>"),
                        multiple = TRUE,
                        selected = "All",
                        choices = c("All", hmda_lei_census %>%
@@ -135,7 +135,7 @@ shinyUI(fluidPage(
   hr(),
   
   #1 Race and race census plots/tables
-  h2("Loan Applications by Applicants' Race and Race Data in Census", align = "center"),
+  h3("Loan Applications by Applicants' Race and Race Data in Census", align = "center"),
   fluidRow(
     column(6,
            tabsetPanel(
@@ -159,7 +159,7 @@ shinyUI(fluidPage(
   br(),
   
   #2 Sex and sex census plots/tables
-  h2("Loan Applications by Applicants' Sex", align = "center"),
+  h3("Loan Applications by Applicants' Sex", align = "center"),
   fluidRow(
     column(6,
            tabsetPanel(
@@ -177,7 +177,7 @@ shinyUI(fluidPage(
   ),
   
   #3 Age and age census plots/tables
-  h2("Loan Applications by Applicants' Age and Age Data in Census", align = "center"),
+  h3("Loan Applications by Applicants' Age and Age Data in Census", align = "center"),
   fluidRow(
     column(6,
            tabsetPanel(
@@ -197,7 +197,7 @@ shinyUI(fluidPage(
   ),
   
   #4 Distribution of Loan Amounts plots/tables
-  h2("Distribution of Loan Amounts", align = "center"),
+  h3("Distribution of Loan Amounts", align = "center"),
   fluidRow(
     column(6,
            plotOutput("distPlot1")
@@ -209,7 +209,7 @@ shinyUI(fluidPage(
     ),
   
   #5 Loan Applications by Action Taken plots/tables
-  h2("Loan Applications by Action Taken", align = "center"),
+  h3("Loan Applications by Action Taken", align = "center"),
   fluidRow(
     column(6,
            tabsetPanel(
@@ -227,7 +227,7 @@ shinyUI(fluidPage(
   ),
   
   #6 Denial Reasons of Loan Applications plots/tables
-  h2("Denial Reasons of Loan Applications", align = "center"),
+  h3("Denial Reasons of Loan Applications", align = "center"),
   fluidRow(
     column(6,
            tabsetPanel(
@@ -245,7 +245,7 @@ shinyUI(fluidPage(
   ),
   
   #7 Loan Applications Map by County
-  h2("Loan Applications by County", align = "center"),
+  h3("Loan Applications by County", align = "center"),
   fluidRow(
     column(6,
            tabsetPanel(
@@ -262,7 +262,7 @@ shinyUI(fluidPage(
   ),
   
   #8 Failed Loan Applications by County 
-  h2("Failed Loan Applications by County", align = "center"),
+  h3("Failed Loan Applications by County", align = "center"),
   fluidRow(
     leafletOutput("leafletPlot", height = 600)
     )
