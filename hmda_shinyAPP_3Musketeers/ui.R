@@ -160,7 +160,7 @@ shinyUI(fluidPage(
   br(),
   
   #2 Sex and sex census plots/tables
-  h2("Loan Applications by Applicants' Sex and Sex Data in Census", align = "center"),
+  h2("Loan Applications by Applicants' Sex", align = "center"),
   fluidRow(
     column(6,
            tabsetPanel(
@@ -209,25 +209,7 @@ shinyUI(fluidPage(
            )
     ),
   
-  #5 Denial Reasons of Loan Applications plots/tables
-  h2("Denial Reasons of Loan Applications", align = "center"),
-  fluidRow(
-    column(6,
-           tabsetPanel(
-             tabPanel("Plot", plotOutput("denialPlot1")),
-             tabPanel("Table", dataTableOutput("denialTable1"))
-           )
-    ),
-    
-    column(6,
-           tabsetPanel(
-             tabPanel("Plot", plotOutput("denialPlot2")),
-             tabPanel("Table", dataTableOutput("denialTable2"))
-           )
-    )
-  ),
-  
-  #6 Loan Applications by Action Taken plots/tables
+  #5 Loan Applications by Action Taken plots/tables
   h2("Loan Applications by Action Taken", align = "center"),
   fluidRow(
     column(6,
@@ -241,6 +223,24 @@ shinyUI(fluidPage(
            tabsetPanel(
              tabPanel("Plot", plotOutput("actionPlot2")),
              tabPanel("Table", dataTableOutput("actionTable2"))
+           )
+    )
+  ),
+  
+  #6 Denial Reasons of Loan Applications plots/tables
+  h2("Denial Reasons of Loan Applications", align = "center"),
+  fluidRow(
+    column(6,
+           tabsetPanel(
+             tabPanel("Plot", plotOutput("denialPlot1")),
+             tabPanel("Table", dataTableOutput("denialTable1"))
+           )
+    ),
+    
+    column(6,
+           tabsetPanel(
+             tabPanel("Plot", plotOutput("denialPlot2")),
+             tabPanel("Table", dataTableOutput("denialTable2"))
            )
     )
   ),
@@ -262,6 +262,7 @@ shinyUI(fluidPage(
     )
   ),
   
+  #8 Failed Loan Applications by County 
   h2("Failed Loan Applications by County", align = "center"),
   fluidRow(
     leafletOutput("leafletPlot", height = 600)
