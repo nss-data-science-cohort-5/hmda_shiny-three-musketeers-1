@@ -3,7 +3,7 @@
 shinyUI(fluidPage(
   
   theme = shinytheme("cyborg"),
-
+  
   # Application title
   titlePanel(title = "", windowTitle = "Fair Lending Analysis"),  
   tags$style(HTML("
@@ -201,12 +201,12 @@ shinyUI(fluidPage(
   fluidRow(
     column(6,
            plotOutput("distPlot1")
-           ),
+    ),
     
     column(6,
            plotOutput("distPlot2")
-           )
-    ),
+    )
+  ),
   
   #5 Loan Applications by Action Taken plots/tables
   h3("Loan Applications by Action Taken", align = "center"),
@@ -244,7 +244,20 @@ shinyUI(fluidPage(
     )
   ),
   
-  #7 Loan Applications Map by County
+  #7 Distribution of Income to Loan Amount Ratios
+  h3("Income to Loan Amount Ratios", align = "center"),
+  fluidRow(
+    column(6,
+           plotOutput("ratioPlot1")
+    ),
+    
+    column(6,
+           plotOutput("ratioPlot2")
+    )
+  ),
+  
+  
+  #8 Loan Applications Map by County
   h3("Loan Applications by County", align = "center"),
   fluidRow(
     column(6,
@@ -261,11 +274,11 @@ shinyUI(fluidPage(
     )
   ),
   
-  #8 Failed Loan Applications by County 
+  #9 Failed Loan Applications by County 
   h3("Failed Loan Applications by County", align = "center"),
   fluidRow(
     leafletOutput("leafletPlot", height = 600)
-    )
+  )
 )
 )
 
